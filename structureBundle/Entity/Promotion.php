@@ -14,6 +14,7 @@ class Promotion implements JsonSerializable
     /**
      *@ORM\Id
      *@ORM\Column(type="integer")
+     *@ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -48,6 +49,12 @@ class Promotion implements JsonSerializable
     protected $promoPrix;
     protected $actuel = false;
     protected $venir = false;
+
+    /**
+     *@ORM\Column(type="text")
+     */
+    protected $promoInfo;
+
     public function getActuel()
     {
         return $this->actuel;
@@ -62,7 +69,8 @@ class Promotion implements JsonSerializable
         return array('id'=> $this->id,
             'PromoDesc' => $this->PromoDesc,
             'dateDebut' => $this->getDateDebut(),
-            'dateFin' => $this->getDateFin());
+            'dateFin' => $this->getDateFin(),
+            'promoInfo' => $this->getPromoInfo());
     }
 
     /**
@@ -153,6 +161,29 @@ class Promotion implements JsonSerializable
     public function getTag()
     {
         return $this->tag;
+    }
+
+    /**
+     * Set promoInfo
+     *
+     * @param string $promoInfo
+     * @return Promotion
+     */
+    public function setPromoInfo($promoInfo)
+    {
+        $this->promoInfo = $promoInfo;
+    
+        return $this;
+    }
+
+    /**
+     * Get promoInfo
+     *
+     * @return string 
+     */
+    public function getPromoInfo()
+    {
+        return nl2br($this->promoInfo);
     }
 
     /**

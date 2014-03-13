@@ -14,7 +14,7 @@ class MarqueRepo extends EntityRepository
 {
     public function getHtml()
     {
-        return '<div class="admin-c border">
+        return '<div class="marq admin-c border">
                     <input type="hidden" name="id" value="%idMarque%">
                     <section class="contentMarque">
                         <article class="adminMarque">
@@ -36,5 +36,15 @@ class MarqueRepo extends EntityRepository
                             <li>Supprimer</li>
                         </article>
                 </div>';
+    }
+
+    public function getNew()
+    {
+        $marque = new Marque ();
+        $em = $this->getEntityManager();
+        $em->persist($marque);
+        $em->flush();
+        $sql = 'select p from EuroLiteriestructureBundle:Promotion p where p.id = (select max(m.id) from EuroLiteriestructureBundle:Promotion m)';
+        return $em->createQuery($sql)->getSingleResult();
     }
 }

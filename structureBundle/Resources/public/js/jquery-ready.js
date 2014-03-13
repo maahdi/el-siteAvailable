@@ -114,22 +114,22 @@ function getAdminInterface()
 function getAdminContent(lien)
 {
     var url = makeUrl();
-    var donnee = {'lien' : lien};
+    var donnee = { 'lien' : lien };
     sendAjax('ajax/adminContentStructure', function (data){
         contentStructure = data;
         struct = contentStructure.match(/%[a-zA-Z]*%/g);
-        $.getJSON(url[0]+"ajax/adminContent",donnee,function (data){
-            $.each(data, function (key,val){
+        $.getJSON(url[0]+"ajax/adminContent", donnee, function (data){
+            $.each(data, function (key, val){
                 var article = null;
                 var i = 0;
-                $.each(struct,function (key,value){
+                $.each(struct, function (key, value){
                     var tmp = value.split("%");
                     if (i == 0)
                     {
-                        article = contentStructure.replace(value,val[tmp[1]]);
+                        article = contentStructure.replace(value, val[tmp[1]]);
                     }else
                     {
-                        article = article.replace(value,val[tmp[1]]);
+                        article = article.replace(value, val[tmp[1]]);
                     }
                 i++;
                 });
@@ -141,7 +141,7 @@ function getAdminContent(lien)
             });
             contentStructure = null;
         });
-    },{ 'lien' : lien});
+    },{ 'lien' : lien });
     /*
      * Url pour choisir sur mon site automatiquement vers quel bundle il faut rediriger
      */
@@ -271,4 +271,33 @@ $(document).on('click','.sup',function(){
             }
         });
     },{ 'dialog' : 'deleteElement', 'element' : lien});
+});
+
+$(document).on('click','.add-btn',function(){
+    var url = makeUrl();
+    var donnee = { 'lien' : lien };
+    $.getJSON(url[0]+"ajax/addElement", donnee, function (data){
+        var elem = data;
+        sendAjax('ajax/adminContentStructure', function (data){
+            struct = data.match(/%[a-zA-Z]*%/g);
+            var article = null;
+            var i = 0;
+            $.each(struct,function (key, value){
+                var tmp = value.split("%");
+                if (i == 0)
+                {
+                    article = data.replace(value, elem[tmp[1]]);
+                }else
+                {
+                    article = article.replace(value, elem[tmp[1]]);
+                }
+            i++;
+            });
+            $('.contentI').prepend(article);
+            $('.datepickerDebut').datepicker({ maxDate : $('.datepickerFin').val(),
+                                            dateFormat : "dd/mm/yy"});
+            $('.datepickerFin').datepicker({ minDate : $('.datepickerDebut').val(),
+                                            dateFormat : "dd/mm/yy"});
+        },{ 'lien' : lien });
+    });
 });

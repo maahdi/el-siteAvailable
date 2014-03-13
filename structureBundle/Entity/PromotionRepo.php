@@ -14,13 +14,16 @@ class PromotionRepo extends EntityRepository
 {
     public function getHtml()
     {
-        return '<div class="admin-c border">
+        return '<div class="admin-c prom border">
                     <input type="hidden" name="id" value="%id%">
                     <section class="contentPromo">
                         <article class="adminPromo">
-                            <label>Date de début :</label><input class="datepickerDebut" type="text" name="dateDebut" value="%dateDebut%">
-                            <label>Date de fin :</label><input class="datepickerFin" type="text" name="dateFin" value="%dateFin%">
-                            <label>Description :</label><textarea class="textareaPromo" name="PromoDesc" >%PromoDesc%</textarea>
+                            <label>Date de début :</label><input class="datepickerDebut" type="text" name="dateDebut" value="%dateDebut%"/>
+                            <label>Date de fin :</label><input class="datepickerFin" type="text" name="dateFin" value="%dateFin%"/>
+                            <label>Entête :</label><input class="PromoDesc" name="PromoDesc" value="%PromoDesc%"/>
+                        </article>
+                        <article class="adminPromoInfo">
+                            <label>Description :</label><textarea class="textareaPromo" name="promoInfo">%promoInfo%</textarea>
                         </article>
                     </section>
                         <article class="btn-admin maj">
@@ -36,5 +39,18 @@ class PromotionRepo extends EntityRepository
     {
         $query = $this->getEntityManager()->createQuery('select p from EuroLiteriestructureBundle:Promotion p order by p.dateDebut asc');
         return $query->getResult();
+    }
+
+    public function getNew()
+    {
+        $promo = new Promotion ();
+        $promo->setTag('periode');
+        $promo->setDateDebut(new \Datetime());
+        $promo->setDateFin(new \Datetime('+7 days'));
+        $em = $this->getEntityManager();
+        $em->persist($promo);
+        $em->flush();
+        $sql = 'select p from EuroLiteriestructureBundle:Promotion p where p.id = (select max(m.id) from EuroLiteriestructureBundle:Promotion m)';
+        return $em->createQuery($sql)->getSingleResult();
     }
 }
