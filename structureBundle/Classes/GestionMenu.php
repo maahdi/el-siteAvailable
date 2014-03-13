@@ -36,20 +36,23 @@ class GestionMenu
     {
         $session = $request->getSession();
         $secure = $this->container->get('security.context');
-        $user = $secure->getToken()->getUser();
-        $menus = $this->getMenuFromRepo('left','Menu');
-        if ((!($user == "anon."))&& $secure->isGranted('ROLE_ADMIN'))
+        if ($secure->getToken() != null)
         {
-            $admin = false;
-            if ($secure->isGranted('ROLE_ADMIN'))
+            $user = $secure->getToken()->getUser();
+            $menus = $this->getMenuFromRepo('left','Menu');
+            if ((!($user == "anon."))&& $secure->isGranted('ROLE_ADMIN'))
             {
-                $admin = true;
-                $this->setAdminMenu($menus);
-                return $this->getRetour('admin',$menus);
+                $admin = false;
+                if ($secure->isGranted('ROLE_ADMIN'))
+                {
+                    $admin = true;
+                    $this->setAdminMenu($menus);
+                    return $this->getRetour('admin',$menus);
+                }
+            }else
+            {
+                return $this->getRetour('normal',$menus);
             }
-        }else
-        {
-            return $this->getRetour('normal',$menus);
         }
    }
     
