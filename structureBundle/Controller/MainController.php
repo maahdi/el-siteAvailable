@@ -53,8 +53,8 @@ class MainController extends Controller
 
     private function getParams($page)
     {
-        $params['articles'] = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByPage($page, 1);
-        $keywords = $this->getDoctrine()->getRepository('yomaahBundle:Page')->findKeywords($page, 1);
+        $params['articles'] = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByPage($page);
+        $keywords = $this->getDoctrine()->getRepository('yomaahBundle:Page')->findKeywords($page);
         if (!$keywords['keywords'])
         {
             $params['keywords'] = $this->keywords;
@@ -90,7 +90,7 @@ class MainController extends Controller
     public function magasinAction()
     {
         $params = $this->getParams('magasin');
-        return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:magasin.html.twig',array($params));
+        return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:magasin.html.twig',$params);
     }
 
     public function contactAction()
