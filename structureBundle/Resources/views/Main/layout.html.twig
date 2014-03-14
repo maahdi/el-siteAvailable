@@ -8,7 +8,7 @@
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Euro Literie Aquitaine</title>
-
+    <meta name="keywords" content="{{ keywords }}"/>
     <link rel="stylesheet" href="{{asset('bundles/EuroLiteriestructure/css/foundation.min.css')}}">
     <link rel="stylesheet" href="{{asset('bundles/EuroLiteriestructure/css/nivo-slider.css')}}">
     <link rel="stylesheet" href="{{asset('bundles/EuroLiteriestructure/css/normalize.css')}}">
@@ -19,8 +19,10 @@
     <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/fontawesome/css/font-awesome.css') }}" />
     <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery-ui-1.10.4.custom.min.css') }}" />
     <link href='http://fonts.googleapis.com/css?family=Volkhov' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />
+    {# A enlever#}
     <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/main-bar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />
+    {##}
     <script src="{{ asset('bundles/EuroLiteriestructure/js/jquery-2.0.3.min.js')}}"></script>
     <script src="{{ asset('bundles/EuroLiteriestructure/js/jquery-ready.js')}}"></script>
     <script src="{{asset('bundles/yomaah/js/jquery-ui-1.10.4.custom.min.js')}}"></script>
@@ -35,7 +37,7 @@
     {%else%}
         {% include 'EuroLiteriestructureBundle:Main:menu.html.twig' %}
         {# A enlever#}
-        {#{% include 'yomaahBundle:Main:main-bar1.html.twig' %}#}
+        {% include 'yomaahBundle:Main:main-bar1.html.twig' %}
         {##}
     {%endif%}
     <div class="row">
