@@ -568,13 +568,6 @@ article
     position :relative;
     height : auto;
 }
-/*
- * A enlever en prod
- */
-#lol
-{
- margin-top : 4%!important;
-}
 .literie-menu,
 .literie-menu ul,
 .literie-menu li,
