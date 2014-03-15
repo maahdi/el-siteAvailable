@@ -25,8 +25,6 @@
                         </li>
                     {%endif%}
                 {%endfor%}
-                <li><a href="{{path('admin_literie')}}">Admin</a></li>
-                <li><a href="{{path('decoadmin_literie')}}">Deco Admin</a></li>
             {%endif%}
             {%if (literie_admin is defined and literie_admin)%}
                     <li><a href="{{path('post_log')}}"><span class="right">Se Déconnecter</span></a></li>

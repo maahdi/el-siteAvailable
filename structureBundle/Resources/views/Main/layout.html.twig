@@ -27,6 +27,7 @@
 <html>
 <body>
     {%if literie_admin is defined and literie_admin%}
+        {% include 'EuroLiteriestructureBundle:Main:barAdmin.html.twig' %}
     {%endif%}
     {%if app.session.get('mobile') %}
     {%else%}
@@ -62,7 +63,7 @@
 
         <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/bootstrap.icons.css') }}" />
         <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery.toolbars.css') }}" />
-        {#<link rel="stylesheet" href="{{ asset('bundles/EuroLiteriestructure/css/monToolbar.css') }}" />#}
+        <link rel="stylesheet" href="{{ asset('bundles/euroliteriestructure/css/monToolbar.css') }}" />
         <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />
         <script type="text/javascript" src="{{asset('bundles/yomaah/js/jquery.toolbar.js')}}"></script>
         <script>setAdminToolbar()</script>
