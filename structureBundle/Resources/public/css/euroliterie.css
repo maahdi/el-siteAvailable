@@ -4,6 +4,11 @@
     font-family :'Volkhov' , serif;
 }
 
+body
+{
+    font-family : "Volkhov";
+    background-color: #a5aabf;
+}
 .courrier p:first-child:before
 {
     content:url('../images/courrier.png');
@@ -137,25 +142,15 @@
     color: #0e9c07;    
 }
 
-body
-{
-    font-family : "Volkhov";
-    background-color: #a5aabf;
-}
 #corps
 {
-    /*background-color:#e6d8d8;*/
-    margin-top : -1em;
     background-color : #dbe1e2;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
     border-radius:3px;
-    /*margin-right:0;*/
     margin-bottom:-10px;
-    /*overflow:hidden;*/
     position :relative;
     display :block;
-    /*z-index : 0;*/
     width : 100%;
     height : auto;
     font-family : "Volkhov";
@@ -683,7 +678,7 @@ article
 
 #lol
 {
-    margin-top:0.5%;
+    /*margin-top:0.5%;*/
     margin-left:-1.5%;
     display:block;
     width:103%;
@@ -692,7 +687,7 @@ article
     -webkit-border-radius:0px 5px 0px 5px;
     -moz-border-radius:0px 5px 0px 0px;
     border-radius:5px 5px 0px 0px;
-    margin-bottom: -5px;
+    /*margin-bottom: -5px;*/
 }
 #logo{
     /*margin-left:-2%;*/
