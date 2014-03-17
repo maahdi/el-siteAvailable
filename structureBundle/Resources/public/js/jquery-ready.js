@@ -114,22 +114,29 @@ function getAdminInterface()
 function getAdminContent(lien)
 {
     var url = makeUrl();
-    var donnee = { 'lien' : lien };
+    var donnee = {'lien' : lien};
+    if (lien == 'pagesAdmin')
+    {
+        sendAjax('ajax/adminContentStructure', function (data){
+            $('.contentI').append(data);
+        }, { 'lien' : 'GkeywordsAdmin' });
+    
+    }
     sendAjax('ajax/adminContentStructure', function (data){
         contentStructure = data;
         struct = contentStructure.match(/%[a-zA-Z]*%/g);
-        $.getJSON(url[0]+"ajax/adminContent", donnee, function (data){
-            $.each(data, function (key, val){
+        $.getJSON(url[0]+"ajax/adminContent",donnee,function (data){
+            $.each(data, function (key,val){
                 var article = null;
                 var i = 0;
-                $.each(struct, function (key, value){
+                $.each(struct,function (key,value){
                     var tmp = value.split("%");
                     if (i == 0)
                     {
-                        article = contentStructure.replace(value, val[tmp[1]]);
+                        article = contentStructure.replace(value,val[tmp[1]]);
                     }else
                     {
-                        article = article.replace(value, val[tmp[1]]);
+                        article = article.replace(value,val[tmp[1]]);
                     }
                 i++;
                 });
@@ -141,7 +148,7 @@ function getAdminContent(lien)
             });
             contentStructure = null;
         });
-    },{ 'lien' : lien });
+    },{ 'lien' : lien});
     /*
      * Url pour choisir sur mon site automatiquement vers quel bundle il faut rediriger
      */
@@ -206,14 +213,43 @@ $(document).on('mouseover','.btn-admin',function(){
 $(document).on('mouseleave','.btn-admin',function(){
     $(this).css({'background-color' : '#f1ecec'});
 });
+$(document).on('click','.maj-Gkeywords', function (){
+    var textarea = $(this).parent().children('textarea');
+    sendAjax('ajax/dialog',function(data){
+        $(data).dialog({
+            modal : true,
+            buttons : {
+                "Oui" : function(){
+                    var t = $(this);
+                    sendAjax('ajax/saveElement',(function(data,textStatus,jqXHR){
+                        t.dialog('close');
+                        var d = '<div>Enregistrement réussi !!</div>';
+                        $(d).dialog({
+                            modal : true,
+                            buttons : {
+                                "Close" : function(){
+                                    $(this).dialog("close");
+                                }
+                            }
+                        });
+                    })(t),{'lien': 'GkeywordsAdmin', 'textarea': textarea.serialize()});
+                },
+                "Non" : function(){
+                    $(this).dialog("close");
+                }
+            }
+        });
+    },{ 'element' : 'GkeywordsAdmin'});
 
+});
 $(document).on('click','.maj',function(){
 
     var id = $(this).parent().children('input');
     var input = $(this).parent().children('section').children('article').children('input');
+    var textarea = null;
     if ( $(this).parent().children('section').children('article').children('textarea').length > 0)
     {
-        var textarea = $(this).parent().children('section').children('article').children('textarea');
+        textarea = $(this).parent().children('section').children('article').children('textarea');
     }
     sendAjax('ajax/dialog',function(data){
         $(data).dialog({
@@ -221,6 +257,13 @@ $(document).on('click','.maj',function(){
             buttons : {
                 "Oui" : function(){
                     var t = $(this);
+                    if (textarea == null)
+                    {
+                        var donnee = {'id' : id.val(), 'lien': lien, 'input' : input.serialize(), 'textarea': null}
+                    }else
+                    {
+                        var donnee = {'id' : id.val(), 'lien': lien, 'input' : input.serialize(), 'textarea': textarea.serialize()}
+                    }
 
                     sendAjax('ajax/saveElement',(function(data,textStatus,jqXHR){
                         t.dialog('close');
@@ -233,7 +276,7 @@ $(document).on('click','.maj',function(){
                                 }
                             }
                         });
-                    })(t),{'id' : id.val(), 'lien': lien, 'input' : input.serialize(), 'textarea': textarea.serialize()});
+                    }) (t), donnee);
                 },
                 "Non" : function(){
                     $(this).dialog("close");
@@ -271,33 +314,4 @@ $(document).on('click','.sup',function(){
             }
         });
     },{ 'dialog' : 'deleteElement', 'element' : lien});
-});
-
-$(document).on('click','.add-btn',function(){
-    var url = makeUrl();
-    var donnee = { 'lien' : lien };
-    $.getJSON(url[0]+"ajax/addElement", donnee, function (data){
-        var elem = data;
-        sendAjax('ajax/adminContentStructure', function (data){
-            struct = data.match(/%[a-zA-Z]*%/g);
-            var article = null;
-            var i = 0;
-            $.each(struct,function (key, value){
-                var tmp = value.split("%");
-                if (i == 0)
-                {
-                    article = data.replace(value, elem[tmp[1]]);
-                }else
-                {
-                    article = article.replace(value, elem[tmp[1]]);
-                }
-            i++;
-            });
-            $('.contentI').prepend(article);
-            $('.datepickerDebut').datepicker({ maxDate : $('.datepickerFin').val(),
-                                            dateFormat : "dd/mm/yy"});
-            $('.datepickerFin').datepicker({ minDate : $('.datepickerDebut').val(),
-                                            dateFormat : "dd/mm/yy"});
-        },{ 'lien' : lien });
-    });
 });

@@ -23,18 +23,18 @@ class MarqueRepo extends EntityRepository
                             <label>Lien :</label><input type="text" name="marqueLien" value="%marqueLien%">
                         </article>
                         <article class="adminLogoMarque">
-                            <label>Logo :</label><figure class="adminMarqueLogo"><img src="../bundles/euroliteriestructure/images/marques/%pngUrl%"></img></figure>
+                            <label>Logo :</label><figure class="adminMarqueLogo"><img src="../../bundles/euroliteriestructure/images/marques/%pngUrl%"></img></figure>
                             <section class="btn-logo modif">
                                 <li>Modifier</li>
                             </section>
                         </article>
                     </section>
-                        <article class="btn-admin maj">
-                            <li>Mettre à jour</li>
-                        </article>
-                        <article class="btn-admin sup">
-                            <li>Supprimer</li>
-                        </article>
+                    <article class="btn-admin maj">
+                        <li>Mettre à jour</li>
+                    </article>
+                    <article class="btn-admin sup">
+                        <li>Supprimer</li>
+                    </article>
                 </div>';
     }
 
