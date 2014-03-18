@@ -149,9 +149,6 @@ function getAdminContent(lien)
             contentStructure = null;
         });
     },{ 'lien' : lien});
-    /*
-     * Url pour choisir sur mon site automatiquement vers quel bundle il faut rediriger
-     */
 }
 
 function scroll(id)
@@ -213,6 +210,7 @@ $(document).on('mouseover','.btn-admin',function(){
 $(document).on('mouseleave','.btn-admin',function(){
     $(this).css({'background-color' : '#f1ecec'});
 });
+
 $(document).on('click','.maj-Gkeywords', function (){
     var textarea = $(this).parent().children('textarea');
     sendAjax('ajax/dialog',function(data){
@@ -242,6 +240,7 @@ $(document).on('click','.maj-Gkeywords', function (){
     },{ 'element' : 'GkeywordsAdmin'});
 
 });
+
 $(document).on('click','.maj',function(){
 
     var id = $(this).parent().children('input');
@@ -317,6 +316,9 @@ $(document).on('click','.sup',function(){
 });
 $(document).on('click', '.modif', function(){
 
+    var pngActuel = $(this).parent().children('figure').children('img').attr('src').match(/[a-zA-Z]+\.(png|jpeg|jpg)/);
+    var img = $(this).parent().children('figure').children('img');
+    var id = $(this).parent().parent().parent().children('input');
     sendAjax('ajax/dialog', function (data){
         var galerie = data;
         $(galerie).dialog({
@@ -325,11 +327,28 @@ $(document).on('click', '.modif', function(){
             modal : true,
             buttons : {
                 "Appliquer" : function (){
+                    $('.imageDisplay').children('.logoGalerie').children('input[type="checkbox"]').each(function () {
+                        if ($(this).attr('checked'))
+                        {
+                            var newPng = $(this).parent().children('input[type="hidden"]').val();
+                            if (newPng != pngActuel[0])
+                            {
+                                sendAjax('ajax/saveImage', function (data){
+                                    $('.adminMarqueLogo').children('img').each(function () {
+                                        if ($(this).is(img))
+                                        {
+                                            $(this).attr('src',$(img).attr('src').replace(pngActuel[0], newPng));
+                                        }
+                                    })
+                                }, { 'id' : id.val(), 'lien' : lien, 'newPng' : newPng});
+                            }
+                        }
+                    });
                 
                 },
-                "Supprimer" : function (){
+                //"Supprimer" : function (){
                 
-                },
+                //},
                 "Fermer" : function (){
                     $(this).dialog("close");
                 }
@@ -345,6 +364,7 @@ $(document).on('click', '.modif', function(){
                     var article = null;
                     article = tmp.replace(/pngUrl/g, val);
                     $('.imageDisplay').append(article);
+                    $('.imageDisplay').children('.logoGalerie').last().children('input[type="checkbox"]').attr('checked', (val == pngActuel[0]));
                 });
             });
         }, { 'lien' : lien });
@@ -358,8 +378,16 @@ $(document).on('click', 'input[type="checkbox"]', function (){
         $('input[type="checkbox"]').each(function (){
             if (!$(this).is(elem))
             {
-                $(this).attr('checked', false);
+                $(this).removeAttr('checked');
+            }else
+            {
+                $(this).attr('checked', true);
+            
             }
         });
     }
+    //else
+    //{
+        //$(this).attr('checked', true);
+    //}
 });

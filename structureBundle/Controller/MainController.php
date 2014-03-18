@@ -275,7 +275,7 @@ class MainController extends Controller
     {
         return new Response('<section class="logoGalerie">
                     <input type="hidden" value="pngUrl" />
-                    <figure class="adminMarqueLogo"><img src="../../bundles/euroliteriestructure/images/marques/pngUrl"></img></figure>
+                    <figure class="adminMarqueLogo"><img src="../bundles/euroliteriestructure/images/marques/pngUrl"></img></figure>
                     <input type="checkbox" name="check" />
                 </section>');
         
@@ -301,6 +301,23 @@ class MainController extends Controller
                 $files[] = $file[1];
             }
             return new JsonResponse($files);
+        }
+    }
+
+    public function saveImageAction($id, $png, $elem)
+    {
+        if ($this->get('security.context')->isGranted('ROLE_USER'))
+        {
+            if (($repo = self::getRepoAdminContentList($elem)) != false)
+            {
+                var_dump($id);
+                $marques = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($id);
+                $marques->setPngUrl($png);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($marques);
+                $em->flush();
+                return new Response();
+            }
         }
     }
 }
