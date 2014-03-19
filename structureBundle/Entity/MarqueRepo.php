@@ -41,10 +41,14 @@ class MarqueRepo extends EntityRepository
     public function getNew()
     {
         $marque = new Marque ();
+        $marque->setNomMarque('Nom de la marque');
+        $marque->setMarqueLien('www.');
+        $marque->setPngUrl('amiel.png');
+        $marque->setContent('Présentation de la marque');
         $em = $this->getEntityManager();
         $em->persist($marque);
         $em->flush();
-        $sql = 'select p from EuroLiteriestructureBundle:Promotion p where p.id = (select max(m.id) from EuroLiteriestructureBundle:Promotion m)';
+        $sql = 'select p from EuroLiteriestructureBundle:Marque p where p.idMarque = (select max(m.idMarque) from EuroLiteriestructureBundle:Marque m)';
         return $em->createQuery($sql)->getSingleResult();
     }
 }

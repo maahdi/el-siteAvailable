@@ -47,6 +47,8 @@ class PromotionRepo extends EntityRepository
         $promo->setTag('periode');
         $promo->setDateDebut(new \Datetime());
         $promo->setDateFin(new \Datetime('+7 days'));
+        $promo->setPromoInfo('Informations complémentaires');
+        $promo->setPromoDesc('Description de la promotion');
         $em = $this->getEntityManager();
         $em->persist($promo);
         $em->flush();
