@@ -34,6 +34,7 @@
         {% include 'EuroLiteriestructureBundle:Main:barAdmin.html.twig' %}
     {%endif%}
     {%if app.session.get('mobile') %}
+        {% include 'EuroLiteriestructureBundle:Main:menuMobile.html.twig' %}
     {%else%}
         {% include 'EuroLiteriestructureBundle:Main:menu.html.twig' %}
     {%endif%}
