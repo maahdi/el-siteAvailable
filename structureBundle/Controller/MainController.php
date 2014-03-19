@@ -368,7 +368,7 @@ class MainController extends Controller
 		$match = "";
         $filesize = $file->getClientSize();
         $tmp = explode('/public/', $folder);
-        $fullPath = '../bundles/euroliteriestructure/'.$tmp[1].'/';
+        $fullPath = '../bundles/euroliteriestructure/'.$tmp[1];
 		if($filesize > 0){	
 			$filename = strtolower($file->getClientOriginalName());
 			$filename = preg_replace('/\s/', '_', $filename);
@@ -385,7 +385,6 @@ class MainController extends Controller
 	   				$match = "1"; // File is allowed
 					$NUM = time();
 					$front_name = substr($file_ext[0], 0, 15);
-					//$newfilename = $front_name."_".$NUM.".".end($file_ext);
 					$newfilename = $filename;
 					$filetype = end($file_ext);
 					$save = $folder.$newfilename;
@@ -502,4 +501,18 @@ class MainController extends Controller
 		}
 	}
 
+    public function deleteLogoAction($lien, $png)
+    {
+        if (preg_match('/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/', 'aaaaa-.png') == 1)
+        {
+            if (!(exec('ls ../deleted/marques | grep '.$png) == $png))
+            {
+                exec('mv ./bundles/euroliteriestructure/images/marques/'.$png.' ../deleted/marques/'.$png);
+            }else
+            {
+                exec('mv ./bundles/euroliteriestructure/images/marques/'.$png.' ../deleted/marques/'.time().'_'.$png);
+            }
+            return new Response();
+        }
+    }
 }

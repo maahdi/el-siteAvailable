@@ -375,11 +375,32 @@ $(document).on('click', '.modif', function(){
                         }
                     });
                 },
-                //"Supprimer" : function (){
-                
-                //},
                 "Fermer" : function (){
                     $(this).dialog("close");
+                },
+                "Supprimer" : function (){
+                    $('<div><p>Ce bouton supprime l\'image sélectionnée dans la fenêtre précédente !!</p><p>Continuez ? :</p></div>').dialog({
+                        buttons : {
+                            "Oui" : function (){
+                                var dialog = $(this);
+                                $('.imageDisplay').children('.logoGalerie').children('input[type="checkbox"]').each(function () {
+                                    if ($(this).attr('checked'))
+                                    {
+                                        var png = $(this).parent();
+                                        var pngUrl = png.children('figure').children('img').first().attr('src').match(/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/);
+                                        sendAjax('ajax/deleteLogo', function (data){
+                                            png.remove();
+                                            dialog.dialog("close");
+                                        },{ 'lien' : lien, 'png' : pngUrl[0] });
+                                    }
+                                });
+                            },
+                            "Non" : function (){
+                                $(this).dialog("close");
+                            }
+                        },
+                        modal :  true
+                    })
                 }
             }
         });
@@ -470,15 +491,16 @@ function ajaxUpload(form,url_action,id_element,html_show_loading,html_error_http
 		var cross = "javascript: ";
 		cross += "window.parent.$m('"+id_element+"').innerHTML = document.body.innerHTML; void(0);";
         $m(id_element).innerHTML = html_error_http;
-		$m('ajax-temp').src = cross;
+        $m('ajax-temp').src = cross;
         sendAjax('ajax/imagesAdminStructure', function (data){
-            var article = null;
-            $('.imageDisplay').append(data);
             var src = $('#upload_area').children('img').last().attr('src');
-            var pngUrl = src.match(/([a-zA-Z]+\-[a-zA-Z]+|[a-zA-Z]+)\.(png|jpg|jpeg)/);
-            console.log(src);
-            $('.imageDisplay').children('.logoGalerie').last().children('.adminMarqueLogo').first().children('img').first().attr('src', src );
-            $('.imageDisplay').children('.logoGalerie').last().children('input[type="hidden"]').attr('value', pngUrl[0]);
+            var pngUrl = src.match(/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/);
+            if (!(pngUrl == null))
+            {
+                $('.imageDisplay').append(data);
+                $('.imageDisplay').children('.logoGalerie').last().children('.adminMarqueLogo').first().children('img').first().attr('src', src );
+                $('.imageDisplay').children('.logoGalerie').last().children('input[type="hidden"]').attr('value', pngUrl[0]);
+            }
         }, { 'lien' : lien });
 		if(detectWebKit){
         	remove($m('ajax-temp'));
