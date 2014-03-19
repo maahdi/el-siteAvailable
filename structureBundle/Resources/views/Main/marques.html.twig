@@ -27,6 +27,24 @@
                 {%endfor%}
             </div>
         </div>
+        <div class="marques small-12 columns">
+            <div class="marque horizontal">
+                {%for marque in marques%}
+                <section id="{{marque.NomMarque}}">
+                        <h3><a href="#{{marque.NomMarque}}">{{marque.nomMarque}}</a></h3>
+                    <article>
+                        <figure class="marque-img"><img src="{{asset('bundles/euroliteriestructure/images/marques/'~marque.pngUrl)}}"></img></figure>
+                        <section class="content">
+                            <article class="marque-content">
+                                <p>{{marque.content | raw}}</p></article>
+                            <article class="marque-link">
+                                <a href="http://{{marque.marqueLien}}">{{marque.marqueLien}}</a></article>
+                        </section>
+                    </article>
+                </section>
+                {%endfor%}
+            </div>
+        </div>
     </div>
 </div>
 <script>

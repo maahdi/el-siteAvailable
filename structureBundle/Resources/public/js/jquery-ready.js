@@ -314,8 +314,8 @@ $(document).on('click','.sup',function(){
         });
     },{ 'dialog' : 'deleteElement', 'element' : lien});
 });
-$(document).on('click', '.modif', function(){
 
+$(document).on('click', '.modif', function(){
     var pngActuel = $(this).parent().children('figure').children('img').attr('src').match(/[a-zA-Z]+\.(png|jpeg|jpg)/);
     var img = $(this).parent().children('figure').children('img');
     var id = $(this).parent().parent().parent().children('input');
