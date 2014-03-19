@@ -344,10 +344,10 @@ $(document).on('click', '.add-btn', function (){
     
     });
 });
-
+var img = null;
 $(document).on('click', '.modif', function(){
-    var pngActuel = $(this).parent().children('figure').children('img').attr('src').match(/[a-zA-Z]+\.(png|jpeg|jpg)/);
-    var img = $(this).parent().children('figure').children('img');
+    var pngActuel = $(this).parent().children('figure').children('img').attr('src').match(/([a-zA-Z]+\-[a-zA-Z]+|[a-zA-Z]+)\.(png|jpg|jpeg)/);
+    img = $(this).parent().children('figure').children('img');
     var id = $(this).parent().parent().parent().children('input');
     sendAjax('ajax/dialog', function (data){
         var galerie = data;
@@ -374,7 +374,6 @@ $(document).on('click', '.modif', function(){
                             }
                         }
                     });
-                
                 },
                 //"Supprimer" : function (){
                 
@@ -470,8 +469,17 @@ function ajaxUpload(form,url_action,id_element,html_show_loading,html_error_http
 		removeEvent($m('ajax-temp'),"load", doUpload);
 		var cross = "javascript: ";
 		cross += "window.parent.$m('"+id_element+"').innerHTML = document.body.innerHTML; void(0);";
-		//$m(id_element).innerHTML = html_error_http;
+        $m(id_element).innerHTML = html_error_http;
 		$m('ajax-temp').src = cross;
+        sendAjax('ajax/imagesAdminStructure', function (data){
+            var article = null;
+            $('.imageDisplay').append(data);
+            var src = $('#upload_area').children('img').last().attr('src');
+            var pngUrl = src.match(/([a-zA-Z]+\-[a-zA-Z]+|[a-zA-Z]+)\.(png|jpg|jpeg)/);
+            console.log(src);
+            $('.imageDisplay').children('.logoGalerie').last().children('.adminMarqueLogo').first().children('img').first().attr('src', src );
+            $('.imageDisplay').children('.logoGalerie').last().children('input[type="hidden"]').attr('value', pngUrl[0]);
+        }, { 'lien' : lien });
 		if(detectWebKit){
         	remove($m('ajax-temp'));
         }else{
