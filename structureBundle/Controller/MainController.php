@@ -327,11 +327,8 @@ class MainController extends Controller
         $colorG = strip_tags($request['colorG']);
         $colorB = strip_tags($request['colorB']);
         $maxH = strip_tags($request['maxH']);
-        
         $tmp = explode('Controller',__DIR__);
-        $folder = $tmp[0].'Resources/public/images/marques';
-        //$file = $request->files->get($filename);
-        //$filesize_image = $file->getClientSize();
+        $folder = $tmp[0].'Resources/public/images/marques/';
         $filesize_image = $file->getClientSize();
         if($filesize_image > 0){
             $upload_image = $this->uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH);
@@ -354,12 +351,11 @@ class MainController extends Controller
             $errorList[] = "File Size Empty";
         }
         if($imgUploaded){
-            return new Response ('<img src="bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$upload_image.'" border="0" />');
+            return new Response ('<img src="../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$upload_image.'" border="0" />');
         }else{
-            $response = '<img src="bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
+            $response = '<img src="../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
             foreach($errorList as $value){
-                    //$response .= $value.', ';
-                $response .= $file->getClientOriginalName();
+                    $response .= $value.', ';
             }
             return new Response ($response);
         }
@@ -368,14 +364,12 @@ class MainController extends Controller
 	private function uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH = null){
 		$maxlimit = $maxSize;
 		$allowed_ext = "jpg,jpeg,gif,png,bmp";
+        $errorList = array();
 		$match = "";
-        //$tmp = $r,c equest->files->get($filename);
         $filesize = $file->getClientSize();
-		//$filesize = $_FILES[$fileName]['size'];
         $tmp = explode('/public/', $folder);
-        $fullpath = 'bundles/euroliteriestructure/'.$tmp[1].'/';
+        $fullPath = '../bundles/euroliteriestructure/'.$tmp[1].'/';
 		if($filesize > 0){	
-            //$file = strip_tags($request->request->get('filename'));
 			$filename = strtolower($file->getClientOriginalName());
 			$filename = preg_replace('/\s/', '_', $filename);
 		   	if($filesize < 1){ 
@@ -391,7 +385,8 @@ class MainController extends Controller
 	   				$match = "1"; // File is allowed
 					$NUM = time();
 					$front_name = substr($file_ext[0], 0, 15);
-					$newfilename = $front_name."_".$NUM.".".end($file_ext);
+					//$newfilename = $front_name."_".$NUM.".".end($file_ext);
+					$newfilename = $filename;
 					$filetype = end($file_ext);
 					$save = $folder.$newfilename;
 					if(!file_exists($save)){
@@ -496,7 +491,7 @@ class MainController extends Controller
 		if(!$match){
 		   	$errorList[]= "File type isn't allowed: $filename";
 		}
-		if(sizeof($errorList) == 0){
+		if(sizeof($errorList) == 0 && isset($errorList)){
 			return $fullPath.$newfilename;
 		}else{
 			$eMessage = array();

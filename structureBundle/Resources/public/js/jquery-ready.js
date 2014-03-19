@@ -416,11 +416,8 @@ $(document).on('click', 'input[type="checkbox"]', function (){
             }
         });
     }
-    //else
-    //{
-        //$(this).attr('checked', true);
-    //}
 });
+
 function $m(theVar){
 	return document.getElementById(theVar)
 }
@@ -473,7 +470,7 @@ function ajaxUpload(form,url_action,id_element,html_show_loading,html_error_http
 		removeEvent($m('ajax-temp'),"load", doUpload);
 		var cross = "javascript: ";
 		cross += "window.parent.$m('"+id_element+"').innerHTML = document.body.innerHTML; void(0);";
-		$m(id_element).innerHTML = html_error_http;
+		//$m(id_element).innerHTML = html_error_http;
 		$m('ajax-temp').src = cross;
 		if(detectWebKit){
         	remove($m('ajax-temp'));
