@@ -71,7 +71,7 @@ class GestionMenu
     private function getVisite()
     {
         $db = $this->container->get('database_connection');
-        $sql = 'select count(idVisite) as nb from visites as v left join utilisateur as u on v.idUser = u.idUser where and v.idUser = 0';
+        $sql = 'select count(idVisite) as nb from visites as v left join utilisateur as u on v.idUser = u.idUser where v.idUser = 0';
         //$sql = 'select count(idVisite) as nb from visites as v left join utilisateur as u on v.idUser = u.idUser where u.idGroup !=1 and v.idUser = 0 and u.idGroup != 3';
         $result = $db->query($sql);
         $result->setFetchMode(\PDO::FETCH_OBJ);
