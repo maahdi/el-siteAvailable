@@ -115,40 +115,64 @@ function getAdminContent(lien)
 {
     var url = makeUrl();
     var donnee = {'lien' : lien};
-    if (lien == 'pagesAdmin')
+    if (lien == 'sliderAdmin')
     {
         sendAjax('ajax/adminContentStructure', function (data){
             $('.contentI').append(data);
-        }, { 'lien' : 'GkeywordsAdmin' });
-    
-    }
-    sendAjax('ajax/adminContentStructure', function (data){
-        contentStructure = data;
-        struct = contentStructure.match(/%[a-zA-Z]*%/g);
-        $.getJSON(url[0]+"ajax/adminContent",donnee,function (data){
-            $.each(data, function (key,val){
+            $.getJSON(url[0]+"ajax/adminContent", donnee, function (data){
                 var article = null;
-                var i = 0;
-                $.each(struct,function (key,value){
-                    var tmp = value.split("%");
-                    if (i == 0)
-                    {
-                        article = contentStructure.replace(value, val[tmp[1]]);
-                    }else
-                    {
-                        article = article.replace(value, val[tmp[1]]);
-                    }
-                i++;
+                var imgStruct = data.struct;
+                $.each(data.active, function(key, value){
+                    article = imgStruct.replace("%dossier%", "active");
+                    article = article.replace("%imgUrl%", value);
+                    article = article.replace("%imgUrl%", value);
+                    $('.sliderActiveAdmin').append(article);
                 });
-                $('.contentI').append(article);
-                $('.datepickerDebut').datepicker({ maxDate : $('.datepickerFin').val(),
-                                                dateFormat : "dd/mm/yy"});
-                $('.datepickerFin').datepicker({ minDate : $('.datepickerDebut').val(),
-                                                dateFormat : "dd/mm/yy"});
+                article = null;
+                $.each(data.inactive, function (key,value){
+                    article = imgStruct.replace("%dossier%", "inactive");
+                    article = article.replace("%imgUrl%", value);
+                    article = article.replace("%imgUrl%", value);
+                    $('.sliderInactiveAdmin').append(article);
+                });
             });
-            contentStructure = null;
-        });
-    },{ 'lien' : lien});
+        }, { 'lien' : lien });
+    }else{
+        if (lien == 'pagesAdmin')
+        {
+            sendAjax('ajax/adminContentStructure', function (data){
+                $('.contentI').append(data);
+            }, { 'lien' : 'GkeywordsAdmin' });
+        
+        }
+        sendAjax('ajax/adminContentStructure', function (data){
+            contentStructure = data;
+            struct = contentStructure.match(/%[a-zA-Z]*%/g);
+            $.getJSON(url[0]+"ajax/adminContent",donnee,function (data){
+                $.each(data, function (key,val){
+                    var article = null;
+                    var i = 0;
+                    $.each(struct,function (key,value){
+                        var tmp = value.split("%");
+                        if (i == 0)
+                        {
+                            article = contentStructure.replace(value, val[tmp[1]]);
+                        }else
+                        {
+                            article = article.replace(value, val[tmp[1]]);
+                        }
+                    i++;
+                    });
+                    $('.contentI').append(article);
+                    $('.datepickerDebut').datepicker({ maxDate : $('.datepickerFin').val(),
+                                                    dateFormat : "dd/mm/yy"});
+                    $('.datepickerFin').datepicker({ minDate : $('.datepickerDebut').val(),
+                                                    dateFormat : "dd/mm/yy"});
+                });
+                contentStructure = null;
+            });
+        },{ 'lien' : lien});
+    }
 }
 
 function scroll(id)
@@ -256,14 +280,28 @@ $(document).on('click','.maj',function(){
             buttons : {
                 "Oui" : function(){
                     var t = $(this);
-                    if (textarea == null)
+                    if (lien == 'sliderAdmin')
+                    {
+                        var donnee = { 'lien' : lien };
+                        var active = new Array;
+                        var inactive = new Array;
+                        $('.sliderActiveAdmin').children('article').each(function(key){
+                            active[key] =  $(this).children('input[type="hidden"]').first().val();
+                        });
+                        donnee['active'] = active;
+                        active = null;
+                        $('.sliderInactiveAdmin').children('article').each(function(key){
+                            inactive[key] = $(this).children('input[type="hidden"]').first().val();
+                        });
+                        donnee['inactive'] = inactive;
+                        inactive = null;
+                    }else if (textarea == null)
                     {
                         var donnee = {'id' : id.val(), 'lien': lien, 'input' : input.serialize(), 'textarea': null}
                     }else
                     {
                         var donnee = {'id' : id.val(), 'lien': lien, 'input' : input.serialize(), 'textarea': textarea.serialize()}
                     }
-
                     sendAjax('ajax/saveElement',(function(data,textStatus,jqXHR){
                         t.dialog('close');
                         var d = '<div>Enregistrement réussi !!</div>';
@@ -285,7 +323,57 @@ $(document).on('click','.maj',function(){
     },{ 'dialog' : 'modifElement', 'element' : lien});
 });
 
-$(document).on('click','.sup',function(){
+$(document).on('click', '.up', function(){
+    var active = $('.sliderActiveAdmin').children();
+    var nbToMove = 0;
+    var inactive = new Array;
+    $('.sliderInactiveAdmin').children().children('input[type="checkbox"]').each(function(){
+        if ($(this).attr('checked'))
+        {
+            inactive[nbToMove] = $(this).parent();
+            nbToMove++;
+        }
+    });
+    if ((active.length + nbToMove) > 4)
+    {
+        var nb = nbToMove - (4 - active.length);
+        var div = '<div><p>Vous avez sélectionné '+ nb +' photo(s) de plus qu\'il n\'y a de place disponible pour le slider !!</p>'+
+                    '<p>Veuillez désélectionner'+ nb +'photo(s)</p>';
+        $(div).dialog({
+            modal : true,
+            buttons : {
+                "Ok": function (){
+                    $(this).dialog("close");
+                }
+            }
+        });
+    }else
+    {
+        $.each(inactive, function(){
+            if ($(this).children('input[type="checkbox"]').attr('checked'))
+            {
+                $(this).children('input[type="checkbox"]').attr('checked', false);
+                var html = '<article class="sliderImage">'+$(this).html()+'</article>';
+                $('.sliderActiveAdmin').append(html);
+                $(this).remove();
+            }
+        });
+    }
+});
+
+$(document).on('click', '.down', function(){
+    $('.sliderActiveAdmin').children('article').each(function(){
+        if ($(this).children('input[type="checkbox"]').attr('checked'))
+        {
+            $(this).children('input[type="checkbox"]').attr('checked', false);
+            var html = '<article class="sliderImage">'+$(this).html()+'</article>';
+            $('.sliderInactiveAdmin').append(html);
+            $(this).remove();
+        }
+    });
+});
+
+$(document).on('click', '.sup', function(){
     var elem = $(this).parent();
     sendAjax('ajax/dialog', function (data){
         $(data).dialog({
@@ -314,6 +402,7 @@ $(document).on('click','.sup',function(){
         });
     },{ 'dialog' : 'deleteElement', 'element' : lien});
 });
+
 $(document).on('click', '.add-btn', function (){
     var url = makeUrl();
     $.getJSON(url[0]+'ajax/addElement', { 'lien' : lien }, function (data){
@@ -328,7 +417,6 @@ $(document).on('click', '.add-btn', function (){
                 if (i == 0)
                 {
                     article = structure.replace(value, elem[tmp[1]]);
-                    console.log(article);
                 }else
                 {
                     article = article.replace(value, elem[tmp[1]]);
@@ -419,23 +507,33 @@ $(document).on('click', '.modif', function(){
             });
         }, { 'lien' : lien });
     }, { 'dialog' : 'images', 'element' : lien});
-
 });
+
 $(document).on('click', 'input[type="checkbox"]', function (){
-    if (!$(this).attr('checked'))
-    {
-        var elem = $(this);
-        $('input[type="checkbox"]').each(function (){
-            if (!$(this).is(elem))
+       if (lien == 'sliderAdmin'){
+            if ($(this).attr('checked'))
             {
                 $(this).removeAttr('checked');
             }else
             {
                 $(this).attr('checked', true);
-            
             }
-        });
-    }
+        }else
+        {
+            if (!$(this).attr('checked'))
+            {
+                var elem = $(this);
+                $('input[type="checkbox"]').each(function (){
+                    if (!$(this).is(elem))
+                    {
+                        $(this).removeAttr('checked');
+                    }else
+                    {
+                        $(this).attr('checked', true);
+                    }
+                });
+            }
+        }
 });
 
 function $m(theVar){

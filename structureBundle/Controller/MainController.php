@@ -32,22 +32,35 @@ class MainController extends Controller
             {
                 $actuel[] = $promo;
                 $i++;
-            }else
-            {
-                $avenir[] = $promo;
             }
+            //else
+            //{
+                //$avenir[] = $promo;
+            //}
         }
         if ($i == 0)
         {
             $actuel = false;
         }
-        if (count($avenir) ==0)
-        {
-            $avenir = false;
-        }
+        //if (count($avenir) ==0)
+        //{
+            //$avenir = false;
+        //}
         $params = $this->getParams('accueil');
         $params['actuel'] = $actuel;
-        $params['avenir'] = $avenir;
+        $file = $this->findFile('Resources/public/images/slider/active');
+        if (count($file) < 5)
+        {
+            $params['slider'] = $this->findFile('Resources/public/images/slider/active');
+        }else
+        {
+            for ($i = 0; $i < 4; $i++)
+            {
+                $tmpFile[] = $file[$i];
+            }
+            $params['slider'] = $tmpFile;
+        }
+        //$params['avenir'] = $avenir;
         //return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:accueil.html.twig',
             //array('position' => 'Accueil','articles' => $articles,'actuel' => $actuel,'avenir' => $avenir));
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:accueil.html.twig', $params);
@@ -87,7 +100,6 @@ class MainController extends Controller
 
     public function marquesAction()
     {
-        //$articles = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByPage('marques',1);
         $params = $this->getParams('marques');
         $params['marques'] = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:Marque')->findAll();
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:marques.html.twig', $params);
@@ -129,11 +141,6 @@ class MainController extends Controller
         $params['form'] = $form->createView();
         $params['envoie'] = $envoi;
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:contact.html.twig', $params);
-        //$h = new HoraireRepo();
-        //$horaires = $h->getHoraires();
-        //$articles = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByPage('contact', 1);
-        //return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:contact.html.twig', 
-            //array('position' => 'Nous trouver', 'horaires' =>$horaires, 'articles' => $articles,'form' => $form->createView(),'envoie' => $envoi));
     }
 
     private function getForm($mail)
@@ -145,27 +152,23 @@ class MainController extends Controller
         return $formBuilder->getForm();
     }
 
-    /**
-     * Remplace fonction de login
-     * de Yomaah\connexionBundle
-     **/
-    public function adminAction()
-    {
-        $this->get('session')->set('zoneAdmin', true);
-        return $this->redirect($this->generateUrl('admin_literie_accueil'),301);
-    }
-
-    public function decoadminAction()
-    {
-        $this->get('session')->remove('zoneAdmin');
-        return $this->redirect($this->generateUrl('admin_literie_accueil'),301);
-    }
 
     public function getAdminContentAction($object)
     {
         if ($this->get('security.context')->isGranted('ROLE_USER'))
         {
-            if (($repo =self::getRepoAdminContentList($object))!= false)
+            if ($object == 'sliderAdmin')
+            {
+                $slider = array();
+                $slider['active'] = $this->findFile('Resources/public/images/slider/active');
+                $slider['inactive'] = $this->findFile('Resources/public/images/slider/inactive');
+                $slider['struct'] = '<article class="sliderImage">
+                        <input type="hidden" value="%imgUrl%" />
+                        <figure><img src="../bundles/euroliteriestructure/images/slider/%dossier%/%imgUrl%"></img></figure>
+                        <input type="checkbox" name="check"/>
+                    </article>';
+                return new JsonResponse($slider);
+            }else if (($repo =self::getRepoAdminContentList($object))!= false)
             {
                 $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->findAll(); 
                 return new JsonResponse($response);
@@ -280,28 +283,32 @@ class MainController extends Controller
                 </section>');
         
     }
-
-    public function imagesAdminAction($objet)
+    private function findFile($rootDir)
     {
-        $subject = explode('Admin', $objet);
         $tmp = explode('Controller',__DIR__);
-        $rootDir = $tmp[0].'Resources/public/images/'.$subject[0];
-
+        $baseDir = $tmp[0];
         $finder = new Finder();
-        $f = $finder->depth('== 0')->files()->notname('/~$/')->in($rootDir);
+        $f = $finder->depth('== 0')->files()->notname('/~$/')->in($baseDir.$rootDir);
         if (count($f) > 0)
         {
             $tmp = array();
             foreach ($f as $file)
             {
-                $tmp[] = explode ($rootDir.'/', $file);
+                $tmp[] = explode ($baseDir.$rootDir.'/', $file);
             }
             foreach ($tmp as $file)
             {
                 $files[] = $file[1];
             }
-            return new JsonResponse($files);
+            return $files;
         }
+    }
+
+    public function imagesAdminAction($objet)
+    {
+        $subject = explode('Admin', $objet);
+        $rootDir = 'Resources/public/images/'.$subject[0];
+        return new JsonResponse($this->findFile($rootDir));
     }
 
     public function saveImageAction($id, $png, $elem)
@@ -319,6 +326,7 @@ class MainController extends Controller
             }
         }
     }
+
     public function uploadLogoAction($request, $file)
     {
         $maxSize = strip_tags($request['maxSize']);
@@ -503,16 +511,71 @@ class MainController extends Controller
 
     public function deleteLogoAction($lien, $png)
     {
-        if (preg_match('/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/', 'aaaaa-.png') == 1)
+        if ($this->testNameValide($png))
         {
-            if (!(exec('ls ../deleted/marques | grep '.$png) == $png))
+            if (!($this->testFileExists('../deleted/marques', $png)))
             {
-                exec('mv ./bundles/euroliteriestructure/images/marques/'.$png.' ../deleted/marques/'.$png);
+                $this->moveImage('marques/', '..deleted/marques/', $png);
             }else
             {
-                exec('mv ./bundles/euroliteriestructure/images/marques/'.$png.' ../deleted/marques/'.time().'_'.$png);
+                $this->moveImage('marques/', '..deleted/marques/'.time().'_', $png);
             }
             return new Response();
         }
+    }
+    
+    private function testFileExists($dossier, $file)
+    {
+        if (exec('ls '.$dossier.' | grep '.$file) == $file)
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    private function testNameValide($name)
+    {
+        if (preg_match('/([a-zA-Z0-9]+\-([a-zA-Z0-9]+|)|[a-zA-Z0-9]+)\.(png|jpg|jpeg)/', $name) == 1)
+        {
+            return true;
+        }else
+        {
+            return false;
+        }
+    }
+
+    public function saveSliderAction($active, $inactive)
+    {
+        foreach ($active as $file)
+        {
+            if ($this->testNameValide($file))
+            {
+                if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                    && $this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                {
+                    $this->moveImage('slider/inactive/', 'slider/active/', $file);
+                }
+            }
+        }
+        foreach($inactive as $file)
+        {
+            if ($this->testNameValide($file))
+            {
+                if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                    && $this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                {
+                    $this->moveImage('slider/active/', 'slider/inactive/', $file);
+                }
+            }
+        }
+        return new Response();
+        
+    }
+
+    private function moveImage($dossier1, $dossier2, $img)
+    {
+        exec('mv ./bundles/euroliteriestructure/images/'.$dossier1.$img.' ./bundles/euroliteriestructure/images/'.$dossier2.$img); 
     }
 }
