@@ -571,7 +571,6 @@ class MainController extends Controller
             }
         }
         return new Response();
-        
     }
 
     private function moveImage($dossier1, $dossier2, $img)
