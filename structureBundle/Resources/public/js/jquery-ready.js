@@ -13,17 +13,7 @@ $(window).ready(function(){
 
 
     $('.sectionAdmin').mouseover(function(){
-        $(this).css(
-            {'-webkit-border-radius': '3px 3px 3px 3px',
-            '-moz-border-radius': '3px 3px 3px 3px',   
-            'border-radius':'3px 3px 3px 3px',
-            'background-color': '#777',
-            'background-color': '-webkit-gradient(linear, left top, left bottom, color-stop(0%, #777), color-stop(93%, #b3b3b3))',
-            'background-color': '-moz-linear-gradient(top, #777 0%, #b3b3b3 93%)',
-            'background-color': '-ms-linear-gradient(top, #777 0%, #b3b3b3 93%)',
-            'background-color': 'linear-gradient(to bottom, #777 0%, #b3b3b3 93%)',
-            'cursor':'pointer'
-            });
+        cssBtnAdmin($(this));
     });
 
     $('.sectionAdmin').mouseleave(function(){
@@ -182,17 +172,7 @@ function scroll(id)
 }
 
 $(document).on('mouseover','.btn-menuI',function(){
-    $(this).css(
-        {'-webkit-border-radius': '3px 3px 3px 3px',
-        '-moz-border-radius': '3px 3px 3px 3px',   
-        'border-radius':'3px 3px 3px 3px',
-        'background-color': '#777',
-        'background-color': '-webkit-gradient(linear, left top, left bottom, color-stop(0%, #777), color-stop(93%, #b3b3b3))',
-        'background-color': '-moz-linear-gradient(top, #777 0%, #b3b3b3 93%)',
-        'background-color': '-ms-linear-gradient(top, #777 0%, #b3b3b3 93%)',
-        'background-color': 'linear-gradient(to bottom, #777 0%, #b3b3b3 93%)',
-        'cursor':'pointer'
-        });
+    cssBtnAdmin($(this));
 });
 
 $(document).on('mouseleave','.btn-menuI',function(){
@@ -202,23 +182,19 @@ $(document).on('mouseleave','.btn-menuI',function(){
 $(document).on('mouseleave','.btn-logo',function(){
     $(this).css({'background-color' : '#f1ecec'});
 });
-
-$(document).on('mouseover','.btn-logo',function(){
-    $(this).css(
-        {'-webkit-border-radius': '3px 3px 3px 3px',
-        '-moz-border-radius': '3px 3px 3px 3px',   
-        'border-radius':'3px 3px 3px 3px',
-        'background-color': '#777',
-        'background-color': '-webkit-gradient(linear, left top, left bottom, color-stop(0%, #777), color-stop(93%, #b3b3b3))',
-        'background-color': '-moz-linear-gradient(top, #777 0%, #b3b3b3 93%)',
-        'background-color': '-ms-linear-gradient(top, #777 0%, #b3b3b3 93%)',
-        'background-color': 'linear-gradient(to bottom, #777 0%, #b3b3b3 93%)',
-        'cursor':'pointer'
-        });
+$(document).on('mouseleave','.btn-slider',function(){
+    $(this).css({'background-color' : '#f1ecec'});
 });
 
-$(document).on('mouseover','.btn-admin',function(){
-    $(this).css(
+$(document).on('mouseover', '.btn-slider', function(){
+    cssBtnAdmin($(this));
+})
+$(document).on('mouseover','.btn-logo',function(){
+    cssBtnAdmin($(this));
+});
+function cssBtnAdmin(bouton)
+{
+    bouton.css(
         {'-webkit-border-radius': '3px 3px 3px 3px',
         '-moz-border-radius': '3px 3px 3px 3px',   
         'border-radius':'3px 3px 3px 3px',
@@ -229,6 +205,11 @@ $(document).on('mouseover','.btn-admin',function(){
         'background-color': 'linear-gradient(to bottom, #777 0%, #b3b3b3 93%)',
         'cursor':'pointer'
     });
+
+}
+
+$(document).on('mouseover','.btn-admin',function(){
+    cssBtnAdmin($(this));
 });
 
 $(document).on('mouseleave','.btn-admin',function(){
@@ -338,14 +319,16 @@ $(document).on('click', '.up', function(){
     {
         var nb = nbToMove - (4 - active.length);
         var div = '<div><p>Vous avez sélectionné '+ nb +' photo(s) de plus qu\'il n\'y a de place disponible pour le slider !!</p>'+
-                    '<p>Veuillez désélectionner'+ nb +'photo(s)</p>';
+                    '<p>Veuillez désélectionner '+ nb +' photo(s)</p>';
         $(div).dialog({
             modal : true,
             buttons : {
                 "Ok": function (){
                     $(this).dialog("close");
                 }
-            }
+            },
+            width : "500",
+            height : "250"
         });
     }else
     {
@@ -359,6 +342,20 @@ $(document).on('click', '.up', function(){
             }
         });
     }
+});
+$(document).on('click', '.upload', function(){
+    sendAjax('ajax/dialog', function (data){
+        $(data).dialog({
+            modal : true,
+            buttons : {
+                "Fermer" : function (){
+                    $(this).dialog("close");
+                }
+            },
+            width : "500",
+            height : "250",
+        })
+    },{ 'lien' : lien, 'dialog' : 'imagesSliderUpload' });
 });
 
 $(document).on('click', '.down', function(){
@@ -590,16 +587,30 @@ function ajaxUpload(form,url_action,id_element,html_show_loading,html_error_http
 		cross += "window.parent.$m('"+id_element+"').innerHTML = document.body.innerHTML; void(0);";
         $m(id_element).innerHTML = html_error_http;
         $m('ajax-temp').src = cross;
-        sendAjax('ajax/imagesAdminStructure', function (data){
-            var src = $('#upload_area').children('img').last().attr('src');
-            var pngUrl = src.match(/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/);
-            if (!(pngUrl == null))
-            {
-                $('.imageDisplay').append(data);
-                $('.imageDisplay').children('.logoGalerie').last().children('.adminMarqueLogo').first().children('img').first().attr('src', src );
-                $('.imageDisplay').children('.logoGalerie').last().children('input[type="hidden"]').attr('value', pngUrl[0]);
-            }
-        }, { 'lien' : lien });
+        if (lien == 'marquesAdmin')
+        {
+            sendAjax('ajax/imagesAdminStructure', function (data){
+                var src = $('#upload_area').children('img').last().attr('src');
+                var pngUrl = src.match(/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/);
+                if (!(pngUrl == null))
+                {
+                    $('.imageDisplay').append(data);
+                    $('.imageDisplay').children('.logoGalerie').last().children('.adminMarqueLogo').first().children('img').first().attr('src', src );
+                    $('.imageDisplay').children('.logoGalerie').last().children('input[type="hidden"]').attr('value', pngUrl[0]);
+                }
+            }, { 'lien' : lien });
+        }else if (lien == 'sliderAdmin')
+        {
+            setTimeout(function (){
+                var src = $('#upload_area').children('img').last().attr('src');
+                var pngUrl = src.match(/([a-zA-Z]+\-([a-zA-Z]+|)|[a-zA-Z]+)\.(png|jpg|jpeg)/);
+                var newImg = $('.sliderImage').first().clone(true);
+                newImg.children('figure').children('img').first().attr('src', src);
+                newImg.children('input[type="hidden"]').attr('value', pngUrl[0]);
+                var html = '<article class="sliderImage">'+newImg.html()+'</article>';
+                $('.sliderInactiveAdmin').append(html);
+            }, 250);
+        }
 		if(detectWebKit){
         	remove($m('ajax-temp'));
         }else{

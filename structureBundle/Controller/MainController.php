@@ -326,6 +326,47 @@ class MainController extends Controller
             }
         }
     }
+    public function uploadSliderAction($request, $file)
+    {
+        $maxSize = strip_tags($request['maxSize']);
+        $maxW = strip_tags($request['maxW']);
+        $colorR = strip_tags($request['colorR']);
+        $colorG = strip_tags($request['colorG']);
+        $colorB = strip_tags($request['colorB']);
+        $maxH = strip_tags($request['maxH']);
+        $tmp = explode('Controller',__DIR__);
+        $folder = $tmp[0].'Resources/public/images/slider/inactive/';
+        $filesize_image = $file->getClientSize();
+        if($filesize_image > 0){
+            $upload_image = $this->uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH, true);
+            if(is_array($upload_image)){
+                foreach($upload_image as $key => $value) {
+                    if($value == "-ERROR-") {
+                        unset($upload_image[$key]);
+                    }
+                }
+                $document = array_values($upload_image);
+                for ($x=0; $x<sizeof($document); $x++){
+                    $errorList[] = $document[$x];
+                }
+                $imgUploaded = false;
+            }else{
+                $imgUploaded = true;
+            }
+        }else{
+            $imgUploaded = false;
+            $errorList[] = "File Size Empty";
+        }
+        if($imgUploaded){
+            return new Response ('<img src="../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$upload_image.'" border="0" />');
+        }else{
+            $response = '<img src="../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
+            foreach($errorList as $value){
+                    $response .= $value.', ';
+            }
+            return new Response ($response);
+        }
+    }
 
     public function uploadLogoAction($request, $file)
     {
@@ -369,7 +410,7 @@ class MainController extends Controller
         }
     }
 
-	private function uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH = null){
+	private function uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH = null, $resize = null){
 		$maxlimit = $maxSize;
 		$allowed_ext = "jpg,jpeg,gif,png,bmp";
         $errorList = array();
@@ -410,11 +451,15 @@ class MainController extends Controller
 							$blank_height = $fheight;
 							$top_offset = 0;
 								
-						}else{
-							if($width_orig <= $maxW && $height_orig <= $maxH){
+                        }else{
+                            if ($resize)
+                            {
+                                $fwidth = $maxW;
+                                $fheight = $maxH;
+                            }else if($width_orig <= $maxW && $height_orig <= $maxH){
 								$fheight = $height_orig;
 								$fwidth = $width_orig;
-							}else{
+                            }else{
 								if($width_orig > $maxW){
 									$ratio = ($width_orig / $maxW);
 									$fwidth = $maxW;
@@ -424,8 +469,8 @@ class MainController extends Controller
 										$fheight = $maxH;
 										$fwidth = ($fwidth / $ratio);
 									}
-								}
-								if($height_orig > $maxH){
+                                }
+                                if($height_orig > $maxH){
 									$ratio = ($height_orig / $maxH);
 									$fheight = $maxH;
 									$fwidth = ($width_orig / $ratio);
