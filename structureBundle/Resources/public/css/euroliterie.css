@@ -749,7 +749,7 @@ body{
 .marque
 {
     width : 100%;
-    height : 730px;
+    height : 760px;
 }
 .vertical img
 {
@@ -800,20 +800,20 @@ body{
 }
 .literie-menu
 {
-    height : 5em;
+    height : 3em;
     width : 107%;
     left : -1.05em;
 }
 .literie-menu li
 {
-    height : 5em;
-    width : 20%;
+    height : 3em;
+    width : 25%;
 }
 
 .literie-menu li a
 {
-    line-height : 3.9em;
-    font-size : 1.0em;
+    line-height : 2.9em;
+    font-size : 0.8em;
     vertical-align : middle;
 }
 #lol
@@ -863,6 +863,11 @@ body{
 }
 
 @media screen and (max-width:1280px) and ( orientation : landscape){
+#div-pos
+{
+    width : 105%;
+    margin-left: -3%;
+}
 #logo img
 {
     height : 15em;
@@ -892,6 +897,24 @@ body{
 .promotions
 {
     left : 0;
+}
+.literie-menu
+{
+    height : 3em;
+    width : 105.6%;
+    left : -1.05em;
+}
+.literie-menu li
+{
+    height : 3em;
+    width : 20%;
+}
+
+.literie-menu li a
+{
+    line-height : 2.9em;
+    font-size : 0.8em;
+    vertical-align : middle;
 }
 }
 
