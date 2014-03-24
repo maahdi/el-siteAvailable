@@ -10,10 +10,14 @@
             </article>
         {%endfor%}
         <div class="marques small-12 columns">
-            <div class="marque horizontal">
+            {%if app.session.get('mobile') == false%}
+                <div class="marque horizontal">
+            {%else%}
+                <div class="marque vertical">
+            {%endif%}
                 {%for marque in marques%}
                 <section id="{{marque.NomMarque}}">
-                        <h3><a href="#{{marque.NomMarque}}">{{marque.nomMarque}}</a></h3>
+                    <h3><a href="#{{marque.NomMarque}}">{{marque.nomMarque}}</a></h3>
                     <article>
                         <figure class="marque-img"><img src="{{asset('bundles/euroliteriestructure/images/marques/'~marque.pngUrl)}}"></img></figure>
                         <section class="content">

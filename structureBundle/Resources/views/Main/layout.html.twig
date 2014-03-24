@@ -6,13 +6,14 @@
 
 <head>
 	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Euro Literie Mont-de-Marsan</title>
     {%if keywords is defined%}
         <meta name="keywords" content="{{ keywords }}"/>
     {%endif%}
     {%if app.session.get('mobile')%}
         <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+        <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/media-queries.css')}}">
     {%else%}
         <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico')}}" />
     {%endif%}
@@ -55,9 +56,9 @@
         </footer>
     </div>
     {% if app.session.get('mobile') == false %}
-        <p id="back-top">
+        <div id="back-top">
             <a href="#top"><span></span>Haut de page</a>
-        </p>
+        </div>
     {%endif%}
     {%if literie_admin is defined and literie_admin%}
         {% include 'yomaahBundle:Toolbar:toolbar.html.twig' %}

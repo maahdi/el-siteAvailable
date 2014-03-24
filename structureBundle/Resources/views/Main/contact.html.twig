@@ -47,7 +47,7 @@
                 <article class="art-content">{{ article.artContent | raw }}</article>
                 <form class="form-email" method="post" {{ form_enctype(form) }}>
                     {{ form_widget(form) }}
-                    <input type="submit" class="btn btn-primary" />
+                    <input type="submit" value="Envoyer" class="btn btn-primary" />
                 </form>
             </div>
             {%endif%}

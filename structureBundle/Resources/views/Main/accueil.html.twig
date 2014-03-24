@@ -7,7 +7,11 @@
 </div>
 
 <div class="row">
-    <div class="articles small-7 columns">
+    {%if app.session.get('mobile') == false%}
+        <div class="articles small-7 columns">
+    {%else%}
+        <div class="articles small-6 columns">
+    {%endif%}
         {%for article in articles%}
             <article class="article">
                 <input type="hidden" name="id" value="{{article.id}}"/>
@@ -16,7 +20,11 @@
             </article>
         {%endfor%}
     </div>
-    <div class="small-5 columns">
+    {%if app.session.get('mobile') == false%}
+        <div class="small-5 columns">
+    {%else%}
+        <div class="small-6 columns">
+    {%endif%}
         <div class="slide slider-wrapper futurico-theme">
             <div id="slider" class="nivoSlider">
                 {%for file in slider%}
@@ -28,7 +36,11 @@
             </div>
         </div>
     </div>
-    <div class="promotions small-5 columns">
+    {%if app.session.get('mobile') == false%}
+        <div class="promotions small-5 columns">
+    {%else%}
+        <div class="promotions small-6 columns">
+    {%endif%}
         <div id="border">
             <article class="promotion">
                 {%if actuel != false and actuel|length > 1 %}
@@ -41,7 +53,9 @@
                         <article class="promo-date"><h2>Du {{promotion.dateDebut}} au {{promotion.dateFin}}</h2></article>
                         <section class="promo-content"><p>{{promotion.PromoDesc | raw}}</p>
                         </section>
-                        <a class="a-promotion" ref=#>Plus d'infos ...</a>
+                        {%if app.session.get('mobile') == false%}
+                            <a class="a-promotion" ref=#>Plus d'infos ...</a>
+                        {%endif%}
                     {%endfor%}
                 {%else%}
                     <article class="promo-date"><h2>Aucune promotions en cours</h2></article>

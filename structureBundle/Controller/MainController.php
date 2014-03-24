@@ -593,25 +593,34 @@ class MainController extends Controller
 
     public function saveSliderAction($active, $inactive)
     {
-        foreach ($active as $file)
+        if (is_array($active))
         {
-            if ($this->testNameValide($file))
+            foreach ($active as $file)
             {
-                if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
-                    && $this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                if ($this->testNameValide($file))
                 {
-                    $this->moveImage('slider/inactive/', 'slider/active/', $file);
+                    if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                        && $this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                    {
+                        $this->moveImage('slider/inactive/', 'slider/active/', $file);
+                    }
                 }
             }
-        }
-        foreach($inactive as $file)
+        }else
         {
-            if ($this->testNameValide($file))
+            $this->moveImage('slider/active/', 'slider/inactive/', '*');
+        }
+        if (is_array($inactive))
+        {
+            foreach($inactive as $file)
             {
-                if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
-                    && $this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                if ($this->testNameValide($file))
                 {
-                    $this->moveImage('slider/active/', 'slider/inactive/', $file);
+                    if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                        && $this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                    {
+                        $this->moveImage('slider/active/', 'slider/inactive/', $file);
+                    }
                 }
             }
         }

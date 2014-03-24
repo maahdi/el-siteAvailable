@@ -112,19 +112,27 @@ function getAdminContent(lien)
             $.getJSON(url[0]+"ajax/adminContent", donnee, function (data){
                 var article = null;
                 var imgStruct = data.struct;
-                $.each(data.active, function(key, value){
-                    article = imgStruct.replace("%dossier%", "active");
-                    article = article.replace("%imgUrl%", value);
-                    article = article.replace("%imgUrl%", value);
-                    $('.sliderActiveAdmin').append(article);
-                });
+                if (data.active != null)
+                {
+                    $.each(data.active, function(key, value){
+                        article = imgStruct.replace("%dossier%", "active");
+                        article = article.replace("%imgUrl%", value);
+                        article = article.replace("%imgUrl%", value);
+                        $('.sliderActiveAdmin').append(article);
+                    });
+                }
                 article = null;
-                $.each(data.inactive, function (key,value){
-                    article = imgStruct.replace("%dossier%", "inactive");
-                    article = article.replace("%imgUrl%", value);
-                    article = article.replace("%imgUrl%", value);
-                    $('.sliderInactiveAdmin').append(article);
-                });
+                if (data.inactive != null)
+                {
+                    $.each(data.inactive, function (key,value){
+                        article = imgStruct.replace("%dossier%", "inactive");
+                        article = article.replace("%imgUrl%", value);
+                        article = article.replace("%imgUrl%", value);
+                        $('.sliderInactiveAdmin').append(article);
+                    });
+                
+                }
+            article = null;
             });
         }, { 'lien' : lien });
     }else{
@@ -269,6 +277,11 @@ $(document).on('click','.maj',function(){
                         $('.sliderActiveAdmin').children('article').each(function(key){
                             active[key] =  $(this).children('input[type="hidden"]').first().val();
                         });
+                        console.log(active);
+                        if (active.length == 0)
+                        {
+                            active = 0;
+                        }
                         donnee['active'] = active;
                         active = null;
                         $('.sliderInactiveAdmin').children('article').each(function(key){
@@ -359,15 +372,52 @@ $(document).on('click', '.upload', function(){
 });
 
 $(document).on('click', '.down', function(){
-    $('.sliderActiveAdmin').children('article').each(function(){
-        if ($(this).children('input[type="checkbox"]').attr('checked'))
+    var nbActive = $('.sliderActiveAdmin').children();
+    var nbToMove = 0;
+    var active = new Array;
+    $('.sliderActiveAdmin').children().children('input[type="checkbox"]').each(function(){
+        if ($(this).attr('checked'))
         {
-            $(this).children('input[type="checkbox"]').attr('checked', false);
-            var html = '<article class="sliderImage">'+$(this).html()+'</article>';
-            $('.sliderInactiveAdmin').append(html);
-            $(this).remove();
+            active[nbToMove] = $(this).parent();
+            nbToMove++;
         }
     });
+    if((nbActive.length - nbToMove) < 1)
+    {
+        $('<div><p>Vous allez enlever toutes les images !!</p><p>Continuez ? :</p></div>').dialog({
+            modal : true,
+            buttons : {
+                "oui" : function (){
+                    $.each(active, function(){
+                        if ($(this).children('input[type="checkbox"]').attr('checked'))
+                        {
+                            $(this).children('input[type="checkbox"]').attr('checked', false);
+                            var html = '<article class="sliderImage">'+$(this).html()+'</article>';
+                            $('.sliderInactiveAdmin').append(html);
+                            $(this).remove();
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "non" : function (){
+                    $(this).dialog("close");
+                }
+            },
+            width : "300",
+            height : "260"
+        });
+    }else
+    {
+        $.each(active, function(){
+            if ($(this).children('input[type="checkbox"]').attr('checked'))
+            {
+                $(this).children('input[type="checkbox"]').attr('checked', false);
+                var html = '<article class="sliderImage">'+$(this).html()+'</article>';
+                $('.sliderInactiveAdmin').append(html);
+                $(this).remove();
+            }
+        });
+    }
 });
 
 $(document).on('click', '.sup', function(){
