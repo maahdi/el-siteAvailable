@@ -42,10 +42,8 @@ class GestionMenu
             $menus = $this->getMenuFromRepo('left','Menu');
             if ((!($user == "anon."))&& $secure->isGranted('ROLE_ADMIN'))
             {
-                $admin = false;
                 if ($secure->isGranted('ROLE_ADMIN'))
                 {
-                    $admin = true;
                     $this->setAdminMenu($menus);
                     return $this->getRetour('admin',$menus);
                 }
@@ -53,6 +51,10 @@ class GestionMenu
             {
                 return $this->getRetour('normal',$menus);
             }
+        }else
+        {
+            $menus = $this->getMenuFromRepo('left','Menu');
+            return $this->getRetour('erreur', $menus);
         }
    }
     
@@ -66,6 +68,9 @@ class GestionMenu
         }else if ($retour == 'normal')
         {
             return array('menus' => $menus,'literie_admin' => false);
+        }else if ($retour == 'erreur')
+        {
+            return array('menus' => $menus,'literie_admin' => false, 'position' => 'Erreur');
         }
     }
     private function getVisite()

@@ -24,6 +24,14 @@ $container->setDefinition('literie_gestionMenu',
         array(new Reference('service_container')))
 );
 
+//$container
+    //->register('kernel.listener.gestionErreur', 'EuroLiterie\structureBundle\Classes\GestionErreur', array(new Reference('templating')))
+    //->addTag('kernel.event_listener', array('event' => 'kernel.exception', 'method' => 'onKernelException'));
+
+$listener = new Definition('EuroLiterie\structureBundle\Classes\GestionErreur', 
+                array(new Reference('templating')));
+$listener->addTag('kernel.event_listener', array('event' => 'kernel.exception', 'method' => 'onKernelException'));
+$container->setDefinition('yomaah_exception',$listener);
 
 $menutwig = new Definition('EuroLiterie\structureBundle\Classes\MenuTwigExtension',array(new Reference('literie_gestionMenu')));
 $menutwig->addTag('twig.extension');
