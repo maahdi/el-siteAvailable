@@ -631,4 +631,11 @@ class MainController extends Controller
     {
         exec('mv ./bundles/euroliteriestructure/images/'.$dossier1.$img.' ./bundles/euroliteriestructure/images/'.$dossier2.$img); 
     }
+
+    public function getPromoInfoAction()
+    {
+        $request = $this->get('request');
+        $promo = $this->get('doctrine')->getRepository('EuroLiteriestructureBundle:Promotion')->find($request->request->get('id'));
+        return new Response($promo->getPromoInfo());
+    }
 }

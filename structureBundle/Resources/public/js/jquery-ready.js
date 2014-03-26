@@ -2,10 +2,13 @@
 $(window).ready(function(){
     $('#slider').nivoSlider(
     {
-        effect: 'sliceUp',
-        animSpeed:650,
-        pauseTime:6000,
-        directionNavHide: false,
+        effect: 'fade',
+        slices : 15,
+        animSpeed:550,
+        pauseTime:4000,
+        directionNav : true,
+        pauseOnHover : false,
+        directionNavHide: true,
         captionOpacity: 1,
         prevText:'<',
         nextText:'>'
@@ -257,12 +260,12 @@ $(document).on('click','.maj-Gkeywords', function (){
 
 $(document).on('click','.maj',function(){
 
-    var id = $(this).parent().children('input');
-    var input = $(this).parent().children('section').children('article').children('input');
+    var id = $(this).parent().parent().children('input');
+    var input = $(this).parent().parent().children('section').children('article').children('input');
     var textarea = null;
-    if ( $(this).parent().children('section').children('article').children('textarea').length > 0)
+    if ( $(this).parent().parent().children('section').children('article').children('textarea').length > 0)
     {
-        textarea = $(this).parent().children('section').children('article').children('textarea');
+        textarea = $(this).parent().parent().children('section').children('article').children('textarea');
     }
     sendAjax('ajax/dialog',function(data){
         $(data).dialog({
@@ -278,7 +281,6 @@ $(document).on('click','.maj',function(){
                         $('.sliderActiveAdmin').children('article').each(function(key){
                             active[key] =  $(this).children('input[type="hidden"]').first().val();
                         });
-                        console.log(active);
                         if (active.length == 0)
                         {
                             active = 0;
@@ -318,6 +320,28 @@ $(document).on('click','.maj',function(){
     },{ 'dialog' : 'modifElement', 'element' : lien});
 });
 
+function openWindow(button, action, width, height)
+{
+    var id = $(button).parent().children('input[type="hidden"]').first().val();
+    $.ajax({
+        type : 'POST',
+        url : 'http://localhost/workspace/framework/web/app_dev.php/'+action,
+        data : { 'id' : id },
+        success : function (data){
+            var html = '<div>'+data+'</div>';
+            $(html).dialog({
+                modal : true,
+                buttons :{
+                    "Fermer":  function (){
+                        $(this).dialog("close");
+                    }
+                },
+                width : width,
+                height : height
+            });
+        }
+    });
+}
 $(document).on('click', '.up', function(){
     var active = $('.sliderActiveAdmin').children();
     var nbToMove = 0;

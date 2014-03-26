@@ -25,13 +25,10 @@
     {%else%}
         <div class="small-6 columns">
     {%endif%}
-        <div class="slide slider-wrapper futurico-theme">
+        <div class="slider-wrapper futurico-theme">
             <div id="slider" class="nivoSlider">
                 {%for file in slider%}
-                    <img src="{{ asset('bundles/euroliteriestructure/images/slider/active/'~file)}}" alt="">
-                    {#<img src="{{ asset('bundles/euroliteriestructure/images/nue2.png')}}" alt="">#}
-                    {#<img src="{{ asset('bundles/euroliteriestructure/images/literie1.jpg')}}" alt="">#}
-                    {#<img src="{{ asset('bundles/euroliteriestructure/images/literie2.jpg')}}" alt="">#}
+                    <img src="{{ asset('bundles/euroliteriestructure/images/slider/active/'~file)}}" alt=""/>
                 {%endfor%}
             </div>
         </div>
@@ -50,11 +47,19 @@
                 {%endif%}
                 {%if actuel != false%}
                     {%for promotion in actuel%}
-                        <article class="promo-date"><h2>Du {{promotion.dateDebut}} au {{promotion.dateFin}}</h2></article>
-                        <section class="promo-content"><p>{{promotion.PromoDesc | raw}}</p>
+                        <section>
+                            <input type="hidden" value="{{ promotion.id}}"/>
+                            <article class="promo-date"><h2>Du {{promotion.dateDebut}} au {{promotion.dateFin}}</h2></article>
+                            <section class="promo-content"><p>{{promotion.PromoDesc | raw}}</p>
                         </section>
                         {%if app.session.get('mobile') == false%}
-                            <a class="a-promotion" ref=#>Plus d'infos ...</a>
+                            <a id="a-promotion"  ref=#>Plus d'infos ...</a>
+                            <script type="text/javascript">
+                                var height = screen.height/2;
+                                document.getElementById('a-promotion').onclick =function(){
+                                 openWindow(this,'ajax/promoInfo', screen.width+"", height+"");
+                                }
+                            </script>
                         {%endif%}
                     {%endfor%}
                 {%else%}

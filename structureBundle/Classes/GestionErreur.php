@@ -18,29 +18,32 @@ class GestionErreur
     {
         // nous récupérons l'objet exception depuis l'évènement reçu
         $exception = $event->getException();
-        if ($exception->getCode() == 0)
+        $response = new Response();
+        if (preg_match('/NotFoundHttpException/',get_class($exception)) == 1)
         {
-            $response = new Response();
             $message = $this->templating->render('EuroLiteriestructureBundle:Main:error404.html.twig');
-            $response->setContent($message);
-            $response->setStatusCode(200);
-            $event->setResponse($response);
+        }else
+        {
+            $message = $exception->getMessage();
         }
-        $message = 'My Error says: ' . $exception->getMessage() . ' with code: ' . $exception->getCode();
-
-        // personnalise notre objet réponse pour afficher les détails de notre exception
-
-        // HttpExceptionInterface est un type d'exception spécial qui
-        // contient le code statut et les détails de l'entête
-        if ($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
-            $response->headers->replace($exception->getHeaders());
-        } else {
-            $response->setStatusCode(500);
-        }
-
-        // envoie notre objet réponse modifié à l'évènement
+        $response->setContent($message);
+        $response->setStatusCode(200);
         $event->setResponse($response);
+        //$message = 'My Error says: ' . $exception->getMessage() . ' with code: ' . $exception->getCode();
+
+        //// personnalise notre objet réponse pour afficher les détails de notre exception
+
+        //// HttpExceptionInterface est un type d'exception spécial qui
+        //// contient le code statut et les détails de l'entête
+        //if ($exception instanceof HttpExceptionInterface) {
+            //$response->setStatusCode($exception->getStatusCode());
+            //$response->headers->replace($exception->getHeaders());
+        //} else {
+            //$response->setStatusCode(500);
+        //}
+
+        //// envoie notre objet réponse modifié à l'évènement
+        //$event->setResponse($response);
     }
     
 }

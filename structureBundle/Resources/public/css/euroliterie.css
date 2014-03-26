@@ -58,18 +58,20 @@ body
 .article table tr td
 {
     display:inline-block;
-    margin-left : 4em;
-    width : 20em;
     text-align : left;
     font-family : "Volkhov";
+    margin-left : 7em;
 }
 
 .jour
 {
-    width : 5em!important;
-    margin-left : 7em!important;
+    width : 5em;
 }
 
+.fermer
+{
+    width : 100%;
+}
 .article table tr:nth-child(even)
 {
 
@@ -154,7 +156,7 @@ body
     display :block;
     width : 100%;
     height : 100%;
-    min-height:200em;
+    min-height:30em;
     font-family : "Volkhov";
 }
 
@@ -842,6 +844,10 @@ body{
 {
     font-size:0.8em;
 }
+.fermer
+{
+    margin-left :5em!important;
+}
 
 .jour
 {
@@ -862,9 +868,22 @@ body{
     margin-top:-0.50em;
     margin-left: -4%;
 }
+
+.futurico-theme.slider-wrapper
+{
+    width:89%;
+}
+.futurico-theme .nivoSlider img
+{
+    max-height : 60px;
+}
 }
 
 @media screen and (max-width:780px) and ( orientation : landscape){
+.futurico-theme .nivoSlider img
+{
+    max-height : 100px;
+}
 #div-pos
 {
     width : 105%;

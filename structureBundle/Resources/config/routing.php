@@ -39,12 +39,14 @@ $collection->add('admin_literie_contact', new Route('/admin_contact', array(
 $collection->add('admin_literie_magasin', new Route('/admin_magasin', array(
     '_controller' => 'EuroLiteriestructureBundle:Main:accueil'
 )));
+$collection->add('admin', new Route('/admin', array(
+    '_controller' => 'YomaahconnexionBundle:Main:login'
+)));
 /**
  * A enlever et dans menu.html.twig
  * mettre lien /login
  **/
-$collection->add('admin_literie', new Route('/admin', array(
-    '_controller' => 'EuroLiteriestructureBundle:Main:admin')));
-$collection->add('decoadmin_literie', new Route('/decoadmin', array(
-    '_controller' => 'EuroLiteriestructureBundle:Main:decoadmin')));
+$collection->add('ajax_promoInfo', new Route('/ajax/promoInfo', array(
+    '_controller' => 'EuroLiteriestructureBundle:Main:getPromoInfo'),
+    array('_method' => 'POST')));
 return $collection;

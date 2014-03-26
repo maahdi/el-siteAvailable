@@ -28,7 +28,8 @@ class GestionMenu
             return $this->getMenu($request);
         }else
         {
-            return array(false);
+            //return array(false);
+            return array('position' => 'Erreur');
         }
     }
 
