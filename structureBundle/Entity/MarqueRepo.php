@@ -17,24 +17,26 @@ class MarqueRepo extends EntityRepository
         return '<div class="marq admin-c border">
                     <input type="hidden" name="id" value="%idMarque%">
                     <section class="contentMarque">
-                        <article class="adminMarque">
-                            <label>Nom :</label><input type="text" name="nomMarque" value="%nomMarque%">
-                            <label>Texte :</label><textarea class="textareaMarque" name="content" >%content%</textarea>
-                            <label>Lien :</label><input type="text" name="marqueLien" value="%marqueLien%">
-                        </article>
                         <article class="adminLogoMarque">
                             <label>Logo :</label><figure class="adminMarqueLogo"><img src="../bundles/euroliteriestructure/images/marques/%pngUrl%"></img></figure>
                             <section class="btn-logo modif">
                                 <li>Modifier</li>
                             </section>
                         </article>
+                        <article class="adminMarque">
+                            <label>Nom :</label><input type="text" name="nomMarque" value="%nomMarque%">
+                            <label>Texte :</label><textarea class="textareaMarque" name="content" >%content%</textarea>
+                            <label>Lien :</label><input type="text" name="marqueLien" value="%marqueLien%">
+                        </article>
                     </section>
-                    <article class="btn-admin maj">
-                        <li>Mettre à jour</li>
-                    </article>
-                    <article class="btn-admin sup">
-                        <li>Supprimer</li>
-                    </article>
+                    <section class="btn-adminPanel">
+                        <article class="btn-admin maj">
+                            <li>Mettre à jour</li>
+                        </article>
+                        <article class="btn-admin sup">
+                            <li>Supprimer</li>
+                        </article>
+                    </section>
                 </div>';
     }
 

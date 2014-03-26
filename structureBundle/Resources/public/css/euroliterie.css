@@ -354,7 +354,7 @@ article
     bottom: 30px;
     z-index:2000;
     display:none;
-    left : 77%;
+    right : 5%;
 }
 #back-top a {
     width: 6em;
@@ -378,7 +378,7 @@ article
     height: 6em;;
     display: block;
 	margin-bottom: 7px;
-	background: #747b49 url(../images/haut.png) no-repeat center center;
+	background: #2a4674 url(../images/haut.png) no-repeat center center;
 	/* rounded corners */
 	-webkit-border-radius: 15px;
 	-moz-border-radius: 15px;

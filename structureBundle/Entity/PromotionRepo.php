@@ -26,12 +26,14 @@ class PromotionRepo extends EntityRepository
                             <label>Description :</label><textarea class="textareaPromo" name="promoInfo">%promoInfo%</textarea>
                         </article>
                     </section>
+                    <section class="btn-adminPanel">
                         <article class="btn-admin maj">
                             <li>Mettre à jour</li>
                         </article>
                         <article class="btn-admin sup">
                             <li>Supprimer</li>
                         </article>
+                    </section>
                 </div>';
     }
 

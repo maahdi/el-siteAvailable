@@ -141,6 +141,7 @@ function getAdminContent(lien)
             sendAjax('ajax/adminContentStructure', function (data){
                 $('.contentI').append(data);
             }, { 'lien' : 'GkeywordsAdmin' });
+            setTimeout(500);
         
         }
         sendAjax('ajax/adminContentStructure', function (data){
