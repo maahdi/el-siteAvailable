@@ -55,9 +55,8 @@
                         {%if app.session.get('mobile') == false%}
                             <a id="a-promotion"  ref=#>Plus d'infos ...</a>
                             <script type="text/javascript">
-                                var height = screen.height/2;
                                 document.getElementById('a-promotion').onclick =function(){
-                                 openWindow(this,'ajax/promoInfo', screen.width+"", height+"");
+                                 openWindow(this,'ajax/promoInfo', '500', '300');
                                 }
                             </script>
                         {%endif%}
