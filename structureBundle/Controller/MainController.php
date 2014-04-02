@@ -2,18 +2,17 @@
 
 namespace EuroLiterie\structureBundle\Controller;
 
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use EuroLiterie\structureBundle\Entity\HoraireRepo;
 use EuroLiterie\structureBundle\Entity\KeywordsRepo;
 use Yomaah\structureBundle\Entity\MyMail;
+use Yomaah\structureBundle\Interfaces\AjaxInterface;
+use Yomaah\ajaxBundle\Controller\AjaxController;
 
-class MainController extends Controller
+class MainController extends Controller implements AjaxInterface
 {
-    //private $keywords = 'euroliterie, matelats, sommier, vente, literie, lits électriques';
-
     public function indexAction()
     {
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:index.html.twig');
@@ -21,37 +20,21 @@ class MainController extends Controller
 
     public function accueilAction()
     {
-        //$articles = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByPage('accueil',1);
         $promotions = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:Promotion')->findBy(array('tag'=>'periode'), array('dateDebut' => 'asc'));
+        $params = $this->getParams('literie_accueil');
         $i =0;
-        $actuel = array();
-        $avenir = array();
+        $actuel = false;
         foreach ($promotions as $promo)
         {
             if ($promo->getActuel())
             {
                 $actuel[] = $promo;
-                $i++;
             }
-            //else
-            //{
-                //$avenir[] = $promo;
-            //}
         }
-        if ($i == 0)
-        {
-            $actuel = false;
-        }
-        //if (count($avenir) ==0)
-        //{
-            //$avenir = false;
-        //}
-        $params = $this->getParams('accueil');
-        $params['actuel'] = $actuel;
-        $file = $this->findFile('Resources/public/images/slider/active');
+        $file = AjaxController::imageSearch('/slider/active', 'EuroLiterie/structureBundle');
         if (count($file) < 5)
         {
-            $params['slider'] = $this->findFile('Resources/public/images/slider/active');
+            $params['slider'] = AjaxController::imageSearch('/slider/active', 'EuroLiterie/structureBundle');
         }else
         {
             for ($i = 0; $i < 4; $i++)
@@ -60,16 +43,17 @@ class MainController extends Controller
             }
             $params['slider'] = $tmpFile;
         }
+        $params['actuel'] = $actuel;
         //$params['avenir'] = $avenir;
-        //return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:accueil.html.twig',
-            //array('position' => 'Accueil','articles' => $articles,'actuel' => $actuel,'avenir' => $avenir));
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:accueil.html.twig', $params);
     }
 
     private function getParams($page)
     {
-        $params['articles'] = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByPage($page);
-        $keywords = $this->getDoctrine()->getRepository('yomaahBundle:Page')->findKeywords($page);
+        $dispatcher = $this->get('bundleDispatcher');
+        $params['articles'] = $this->getDoctrine()->getRepository('yomaahBundle:Article')
+                ->findByPage(array('pageUrl' => $page,'idSite' => $dispatcher->getIdSite()));
+        $keywords = $this->getDoctrine()->getRepository('yomaahBundle:Page')->findKeywords($page, $dispatcher->getIdSite());
         $repoKeyword = new KeywordsRepo();
         $Gkeywords = $repoKeyword->getGeneralKeywords();
         if (!$keywords['keywords'])
@@ -79,9 +63,8 @@ class MainController extends Controller
         {
             $params['keywords'] = $Gkeywords.', '.$keywords['keywords']; 
         }
-        //$params['position'] = $this->getPosition($page);
-        $page = $this->getDoctrine()->getRepository('yomaahBundle:Page')->findBy(array('pageUrl' => $page));
-        $params['position'] = $page[0]->getPosition();
+        $page = $this->getDoctrine()->getRepository('yomaahBundle:Page')->findPageByUrl(array('pageUrl' => $page, 'idSite' => $dispatcher->getIdSite()));
+        $params['position'] = $page->getPosition();
         return $params;
     }
 
@@ -100,7 +83,7 @@ class MainController extends Controller
 
     public function marquesAction()
     {
-        $params = $this->getParams('marques');
+        $params = $this->getParams('literie_marques');
         $params['marques'] = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:Marque')->findAll();
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:marques.html.twig', $params);
     }
@@ -135,7 +118,7 @@ class MainController extends Controller
             $this->get('session')->remove('envoie');
             $envoi = true;
         }
-        $params = $this->getParams('contact');
+        $params = $this->getParams('literie_contact');
         $h = new HoraireRepo();
         $params['horaires'] = $h->getHoraires();
         $params['form'] = $form->createView();
@@ -152,42 +135,23 @@ class MainController extends Controller
         return $formBuilder->getForm();
     }
 
-
-    public function getAdminContentAction($object)
+    /**
+     * Remplace fonction de login
+     * de Yomaah\connexionBundle
+     **/
+    public function adminAction()
     {
-        if ($this->get('security.context')->isGranted('ROLE_USER'))
-        {
-            if ($object == 'sliderAdmin')
-            {
-                $slider = array();
-                $slider['active'] = $this->findFile('Resources/public/images/slider/active');
-                $slider['inactive'] = $this->findFile('Resources/public/images/slider/inactive');
-                $slider['struct'] = '<article class="sliderImage">
-                        <input type="hidden" value="%imgUrl%" />
-                        <figure><img src="../bundles/euroliteriestructure/images/slider/%dossier%/%imgUrl%"></img></figure>
-                        <input type="checkbox" name="check"/>
-                    </article>';
-                return new JsonResponse($slider);
-            }else if (($repo =self::getRepoAdminContentList($object))!= false)
-            {
-                $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->findAll(); 
-                return new JsonResponse($response);
-            }
-        }
-    }
-    public function getAdminContentStructureAction($object)
-    {
-        if ($this->get('security.context')->isGranted('ROLE_USER'))
-        {
-            if (($repo =$this->getRepoAdminContentList($object))!= false)
-            {
-                $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getHtml(); 
-                return new Response($response);
-            }
-        }
+        $this->get('session')->set('zoneAdmin', true);
+        return $this->redirect($this->generateUrl('admin_literie_accueil'),301);
     }
 
-    static function getRepoAdminContentList($object)
+    public function decoadminAction()
+    {
+        $this->get('session')->remove('zoneAdmin');
+        return $this->redirect($this->generateUrl('literie_accueil'),301);
+    }
+
+    public function getRepoAdminContentList($object)
     {
         $modifiable = array('marquesAdmin' => 'Marque',
             'promotionsAdmin' => 'Promotion',
@@ -202,424 +166,193 @@ class MainController extends Controller
         }
     }
 
-    public function saveElementAction($input, $textarea, $id, $object)
+    public function saveElementAction(Array $param)
     {
-        if ($this->get('security.context')->isGranted('ROLE_USER'))
+        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
         {
-            $elem = explode('&',$input);
-            $obj = array();
-            foreach($elem as $e)
+            $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($param['id']); 
+            $em = $this->getDoctrine()->getManager();
+            if ($param['input'] != false)
             {
-                $tmp = explode('=',$e);
-                if (preg_match('/date/',urldecode($tmp[0])) == 1)
+                foreach($param['input'] as $key => $input)
                 {
-                    $date = preg_replace('/\//','-',urldecode($tmp[1]));
-                    $obj['set'.ucfirst($tmp[0])] = new \Datetime($date);
-                    
-                }else
+                    $element->$key($input);
+                }
+            }else if ($param['textarea'] != false)
+            {
+                foreach($param['textarea'] as $key => $input)
                 {
-                    $obj['set'.ucfirst($tmp[0])] = urldecode($tmp[1]);
+                    $element->$key($input);
                 }
             }
-            $elem = null;
-            if ($textarea != null)
-            {
-                $elem = explode('&', $textarea);
-                foreach($elem as $e)
-                {
-                    $tmp = explode('=', $e);
-                    $obj['set'.ucfirst($tmp[0])]= urldecode($tmp[1]);
-                }
-                $elem = null;
-            }
-            if (($repo = $this->getRepoAdminContentList($object)) != false)
-            {
-                $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($id); 
-                foreach($obj as $key=>$val)
-                {
-                    $element->$key($val);
-                }
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($element);
-                $em->flush();
-                return new Response();
-            }
+            $em->persist($element);
+            $em->flush();
+            return new Response();
+        }else if ($param['lien'] == 'sliderAdmin')
+        {
+            return $this->saveSlider($param['active'], $param['inactive']);
         }
     }
 
-    public function deleteElementAction($id, $object)
+    public function deleteElementAction(Array $param)
     {
-        if ($this->get('security.context')->isGranted('ROLE_USER'))
+        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
         {
-            if (($repo = self::getRepoAdminContentList($object)) != false)
-            {
-                $em = $this->getDoctrine()->getManager();
-                $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($id);
-                $em->remove($element);
-                $em->flush();
-                return new Response();
-            }
+            $em = $this->getDoctrine()->getManager();
+            $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($param['id']);
+            $em->remove($element);
+            $em->flush();
+            return new Response();
         }
     }
 
-    public function addElementAction($object)
+    public function addElementAction(Array $param)
     {
-        if ($this->get('security.context')->isGranted('ROLE_USER'))
+        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
         {
-            if (($repo = self::getRepoAdminContentList($object)) != false)
-            {
-                $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getNew();
-                return new JsonResponse($element);
-            }
+            $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getNew();
+            return new JsonResponse($element);
         }
     }
 
-    public function imagesAdminStructureAction()
+    private function getDeployedImagesUrl()
+    {
+        $dispatcher = $this->get('bundleDispatcher');
+        if ($dispatcher->getDeployed())
+        {
+            return '../bundles/euroliteriestructure/images/';
+        }else
+        {
+            return '../../bundles/euroliteriestructure/images/';
+        }
+    }
+
+    public function logoAdminStructureAction()
     {
         return new Response('<section class="logoGalerie">
                     <input type="hidden" value="pngUrl" />
-                    <figure class="adminMarqueLogo"><img src="../bundles/euroliteriestructure/images/marques/pngUrl"></img></figure>
+                    <figure class="adminMarqueLogo"><img src="'.$this->getDeployedImagesUrl().'marques/pngUrl"></img></figure>
                     <input type="checkbox" name="check" />
                 </section>');
-        
     }
-    private function findFile($rootDir)
+
+    public function getAdminContentStructureAction(Array $param)
     {
-        $tmp = explode('Controller',__DIR__);
-        $baseDir = $tmp[0];
-        $finder = new Finder();
-        $f = $finder->depth('== 0')->files()->notname('/~$/')->in($baseDir.$rootDir);
-        if (count($f) > 0)
+        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
         {
-            $tmp = array();
-            foreach ($f as $file)
-            {
-                $tmp[] = explode ($baseDir.$rootDir.'/', $file);
-            }
-            foreach ($tmp as $file)
-            {
-                $files[] = $file[1];
-            }
-            return $files;
-        }
-    }
-
-    public function imagesAdminAction($objet)
-    {
-        $subject = explode('Admin', $objet);
-        $rootDir = 'Resources/public/images/'.$subject[0];
-        return new JsonResponse($this->findFile($rootDir));
-    }
-
-    public function saveImageAction($id, $png, $elem)
-    {
-        if ($this->get('security.context')->isGranted('ROLE_USER'))
+            $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getHtml($this->getDeployedImagesUrl()); 
+        }else if ($param['lien'] == 'GkeywordsAdmin')
         {
-            if (($repo = self::getRepoAdminContentList($elem)) != false)
-            {
-                $marques = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($id);
-                $marques->setPngUrl($png);
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($marques);
-                $em->flush();
-                return new Response();
-            }
-        }
-    }
-    public function uploadSliderAction($request, $file)
-    {
-        $maxSize = strip_tags($request['maxSize']);
-        $maxW = strip_tags($request['maxW']);
-        $colorR = strip_tags($request['colorR']);
-        $colorG = strip_tags($request['colorG']);
-        $colorB = strip_tags($request['colorB']);
-        $maxH = strip_tags($request['maxH']);
-        $tmp = explode('Controller',__DIR__);
-        $folder = $tmp[0].'Resources/public/images/slider/inactive/';
-        $filesize_image = $file->getClientSize();
-        if($filesize_image > 0){
-            $upload_image = $this->uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH, true);
-            if(is_array($upload_image)){
-                foreach($upload_image as $key => $value) {
-                    if($value == "-ERROR-") {
-                        unset($upload_image[$key]);
-                    }
-                }
-                $document = array_values($upload_image);
-                for ($x=0; $x<sizeof($document); $x++){
-                    $errorList[] = $document[$x];
-                }
-                $imgUploaded = false;
-            }else{
-                $imgUploaded = true;
-            }
-        }else{
-            $imgUploaded = false;
-            $errorList[] = "File Size Empty";
-        }
-        if($imgUploaded){
-            return new Response ('<img src="../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$upload_image.'" border="0" />');
-        }else{
-            $response = '<img src="../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
-            foreach($errorList as $value){
-                    $response .= $value.', ';
-            }
-            return new Response ($response);
-        }
-    }
-
-    public function uploadLogoAction($request, $file)
-    {
-        $maxSize = strip_tags($request['maxSize']);
-        $maxW = strip_tags($request['maxW']);
-        $colorR = strip_tags($request['colorR']);
-        $colorG = strip_tags($request['colorG']);
-        $colorB = strip_tags($request['colorB']);
-        $maxH = strip_tags($request['maxH']);
-        $tmp = explode('Controller',__DIR__);
-        $folder = $tmp[0].'Resources/public/images/marques/';
-        $filesize_image = $file->getClientSize();
-        if($filesize_image > 0){
-            $upload_image = $this->uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH);
-            if(is_array($upload_image)){
-                foreach($upload_image as $key => $value) {
-                    if($value == "-ERROR-") {
-                        unset($upload_image[$key]);
-                    }
-                }
-                $document = array_values($upload_image);
-                for ($x=0; $x<sizeof($document); $x++){
-                    $errorList[] = $document[$x];
-                }
-                $imgUploaded = false;
-            }else{
-                $imgUploaded = true;
-            }
-        }else{
-            $imgUploaded = false;
-            $errorList[] = "File Size Empty";
-        }
-        if($imgUploaded){
-            return new Response ('<img src="../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$upload_image.'" border="0" />');
-        }else{
-            $response = '<img src="../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
-            foreach($errorList as $value){
-                    $response .= $value.', ';
-            }
-            return new Response ($response);
-        }
-    }
-
-	private function uploadImage($file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH = null, $resize = null){
-		$maxlimit = $maxSize;
-		$allowed_ext = "jpg,jpeg,gif,png,bmp";
-        $errorList = array();
-		$match = "";
-        $filesize = $file->getClientSize();
-        $tmp = explode('/public/', $folder);
-        $fullPath = '../bundles/euroliteriestructure/'.$tmp[1];
-		if($filesize > 0){	
-			$filename = strtolower($file->getClientOriginalName());
-			$filename = preg_replace('/\s/', '_', $filename);
-		   	if($filesize < 1){ 
-				$errorList[] = "File size is empty.";
-			}
-			if($filesize > $maxlimit){ 
-				$errorList[] = "File size is too big.";
-			}
-		    $file_ext = preg_split("/\./",$filename);
-			$allowed_ext = preg_split("/\,/",$allowed_ext);
-			foreach($allowed_ext as $ext){
-				if($ext==end($file_ext)){
-	   				$match = "1"; // File is allowed
-					$NUM = time();
-					$front_name = substr($file_ext[0], 0, 15);
-					$newfilename = $filename;
-					$filetype = end($file_ext);
-					$save = $folder.$newfilename;
-					if(!file_exists($save)){
-						list($width_orig, $height_orig) = getimagesize($file->getPathName());
-						if($maxH == null){
-							if($width_orig < $maxW){
-								$fwidth = $width_orig;
-							}else{
-								$fwidth = $maxW;
-							}
-							$ratio_orig = $width_orig/$height_orig;
-							$fheight = $fwidth/$ratio_orig;
-							
-							$blank_height = $fheight;
-							$top_offset = 0;
-								
-                        }else{
-                            if ($resize)
-                            {
-                                $fwidth = $maxW;
-                                $fheight = $maxH;
-                            }else if($width_orig <= $maxW && $height_orig <= $maxH){
-								$fheight = $height_orig;
-								$fwidth = $width_orig;
-                            }else{
-								if($width_orig > $maxW){
-									$ratio = ($width_orig / $maxW);
-									$fwidth = $maxW;
-									$fheight = ($height_orig / $ratio);
-									if($fheight > $maxH){
-										$ratio = ($fheight / $maxH);
-										$fheight = $maxH;
-										$fwidth = ($fwidth / $ratio);
-									}
-                                }
-                                if($height_orig > $maxH){
-									$ratio = ($height_orig / $maxH);
-									$fheight = $maxH;
-									$fwidth = ($width_orig / $ratio);
-									if($fwidth > $maxW){
-										$ratio = ($fwidth / $maxW);
-										$fwidth = $maxW;
-										$fheight = ($fheight / $ratio);
-									}
-								}
-							}
-							if($fheight == 0 || $fwidth == 0 || $height_orig == 0 || $width_orig == 0){
-								die("FATAL ERROR REPORT ERROR CODE [add-pic-line-67-orig] to <a href='http://www.atwebresults.com'>AT WEB RESULTS</a>");
-							}
-							if($fheight < 45){
-								$blank_height = 45;
-								$top_offset = round(($blank_height - $fheight)/2);
-							}else{
-								$blank_height = $fheight;
-							}
-						}
-						$image_p = imagecreatetruecolor($fwidth, $blank_height);
-						$white = imagecolorallocate($image_p, $colorR, $colorG, $colorB);
-						imagefill($image_p, 0, 0, $white);
-						switch($filetype){
-							case "gif":
-								$image = @imagecreatefromgif($file->getPathName());
-							break;
-							case "jpg":
-								$image = @imagecreatefromjpeg($file->getPathName());
-							break;
-							case "jpeg":
-								$image = @imagecreatefromjpeg($file->getPathName());
-							break;
-							case "png":
-								$image = @imagecreatefrompng($file->getPathName());
-							break;
-						}
-						@imagecopyresampled($image_p, $image, 0, $top_offset, 0, 0, $fwidth, $fheight, $width_orig, $height_orig);
-						switch($filetype){
-							case "gif":
-								if(!@imagegif($image_p, $save)){
-									$errorList[]= "PERMISSION DENIED [GIF]";
-								}
-							break;
-							case "jpg":
-								if(!@imagejpeg($image_p, $save, 100)){
-									$errorList[]= "PERMISSION DENIED [JPG]";
-								}
-							break;
-							case "jpeg":
-								if(!@imagejpeg($image_p, $save, 100)){
-									$errorList[]= "PERMISSION DENIED [JPEG]";
-								}
-							break;
-							case "png":
-								if(!@imagepng($image_p, $save, 0)){
-									$errorList[]= "PERMISSION DENIED [PNG]";
-								}
-							break;
-						}
-						@imagedestroy($filename);
-					}else{
-						$errorList[]= "CANNOT MAKE IMAGE IT ALREADY EXISTS";
-					}	
-				}
-			}		
-		}else{
-			$errorList[]= "NO FILE SELECTED";
-		}
-		if(!$match){
-		   	$errorList[]= "File type isn't allowed: $filename";
-		}
-		if(sizeof($errorList) == 0 && isset($errorList)){
-			return $fullPath.$newfilename;
-		}else{
-			$eMessage = array();
-			for ($x=0; $x<sizeof($errorList); $x++){
-				$eMessage[] = $errorList[$x];
-			}
-		   	return $eMessage;
-		}
-	}
-
-    public function deleteLogoAction($lien, $png)
-    {
-        if ($this->testNameValide($png))
+            $keyRepo = new KeywordsRepo();
+            $response = $keyRepo->getHtml();
+        }else if ($param['lien'] == 'sliderAdmin')
         {
-            if (!($this->testFileExists('../deleted/marques', $png)))
+            $response = $this->get('templating')->render('EuroLiteriestructureBundle:Ajax:imagesSlider.html.twig',array('url' => $this->getDeployedImagesUrl()));
+        }else if ($param['lien'] == 'sliderMiniature')
+        {
+            $response = '<article class="sliderImage">
+                    <input type="hidden" value="" />
+                    <figure><img src=""></img></figure>
+                    <input type="checkbox" name="check"/>
+                </article>';
+        }
+        return new Response($response);
+    }
+
+    public function getDialogAction(Array $param)
+    {
+        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
+        {
+            $filename = $param['dialog'].$repo;
+            
+        }else if ($param['lien'] == 'sliderAdmin')
+        {
+            $filename = $param['dialog'].'Slider';
+        }
+        return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Dialog:'.$filename.'.html.twig');
+    }
+
+    public function getAdminInterfaceAction(Array $param)
+    {
+        if (($filename = $this->getRepoAdminContentList($param['lien'])) != false)
+        {
+            return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:AdminMenu:adminInterface'.$filename.'.html.twig');
+            
+        }else if ($param['lien'] == 'sliderAdmin')
+        {
+            return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:AdminMenu:adminInterfaceSlider.html.twig');
+        }
+
+    }
+
+    public function getAdminContentAction(Array $param)
+    {
+        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
+        {
+            $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->findAll(); 
+            return new JsonResponse($response);
+        }else if ($param['lien'] == 'sliderAdmin')
+        {
+            $slider = array();
+            $slider['active'] = AjaxController::imageSearch('slider/active', 'EuroLiterie/structureBundle');
+            $slider['inactive'] = AjaxController::imageSearch('slider/inactive', 'EuroLiterie/structureBundle');
+            $slider['struct'] = '<article class="sliderImage">
+                    <input type="hidden" value="%imgUrl%" />
+                    <figure><img src="'.$this->getDeployedImagesUrl().'slider/%dossier%/%imgUrl%"></img></figure>
+                    <input type="checkbox" name="check"/>
+                </article>';
+            return new JsonResponse($slider);
+        }
+    }
+
+    public function deleteLogoAction($param)
+    {
+        if ($param['png'] != false)
+        {
+            if (!(AjaxController::testFileExists('../deleted/marques', $png)))
             {
-                $this->moveImage('marques/', '..deleted/marques/', $png);
+                AjaxController::moveImage('marques/', '..deleted/marques/', $png);
             }else
             {
-                $this->moveImage('marques/', '..deleted/marques/'.time().'_', $png);
+                AjaxController::moveImage('marques/', '..deleted/marques/'.time().'_', $png);
             }
             return new Response();
         }
     }
-    
-    private function testFileExists($dossier, $file)
-    {
-        if (exec('ls '.$dossier.' | grep '.$file) == $file)
-        {
-            return true;
-        }else
-        {
-            return false;
-        }
-    }
 
-    private function testNameValide($name)
-    {
-        if (preg_match('/([a-zA-Z0-9]+\-([a-zA-Z0-9]+|)|[a-zA-Z0-9]+)\.(png|jpg|jpeg)/', $name) == 1)
-        {
-            return true;
-        }else
-        {
-            return false;
-        }
-    }
-
-    public function saveSliderAction($active, $inactive)
+    public function saveSlider($active, $inactive)
     {
         if (is_array($active))
         {
             foreach ($active as $file)
             {
-                if ($this->testNameValide($file))
+                if (AjaxController::testNameValide($file, 'jpg|png|jpeg'))
                 {
-                    if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
-                        && $this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                    if (!(AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                        && AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
                     {
-                        $this->moveImage('slider/inactive/', 'slider/active/', $file);
+                        AjaxController::moveImage('slider/inactive/', 'slider/active/', $file, 'euroliteriestructure');
                     }
                 }
             }
         }else
         {
-            $this->moveImage('slider/active/', 'slider/inactive/', '*');
+            AjaxController::moveImage('slider/active/', 'slider/inactive/', '*');
         }
         if (is_array($inactive))
         {
             foreach($inactive as $file)
             {
-                if ($this->testNameValide($file))
+                if (AjaxController::testNameValide($file, 'png|jpg|jpeg'))
                 {
-                    if (!($this->testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
-                        && $this->testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                    if (!(AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                        && AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
                     {
-                        $this->moveImage('slider/active/', 'slider/inactive/', $file);
+                        AjaxController::moveImage('slider/active/', 'slider/inactive/', $file, 'euroliteriestructure');
+
+                    }else if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive', $file))
+                    {
+                        AjaxController::moveImage('slider/active/', 'slider/inactive/', $file, 'euroliteriestructure', time().$file);
                     }
                 }
             }
@@ -627,15 +360,143 @@ class MainController extends Controller
         return new Response();
     }
 
-    private function moveImage($dossier1, $dossier2, $img)
+    public function saveImageAction(Array $param)
     {
-        exec('mv ./bundles/euroliteriestructure/images/'.$dossier1.$img.' ./bundles/euroliteriestructure/images/'.$dossier2.$img); 
+        if (($repo = self::getRepoAdminContentList($param['lien'])) != false)
+        {
+            $marques = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($param['id']);
+            if ($param['png'] != false)
+            {
+                $marques->setPngUrl($param['png']);
+            }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($marques);
+            $em->flush();
+            return new Response();
+        }
+    }
+    public function uploadImageAction(Array $param)
+    {
+        $file = $param['file'];
+        $maxSize = $param['fileInfo']['maxSize'];
+        $maxW = $param['fileInfo']['maxW'];
+        $colorR = $param['fileInfo']['colorR'];
+        $colorG = $param['fileInfo']['colorG'];
+        $colorB = $param['fileInfo']['colorB'];
+        $maxH = $param['fileInfo']['maxH'];
+        $img = array();
+        if ($param['lien'] == 'marquesAdmin')
+        {
+            $img = $this->uploadLogoAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH);
+
+        }else if ($param['lien'] == 'sliderAdmin')
+        {
+            $img = $this->uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH);
+        }
+        if($img['imgUploaded'] === true){
+            return new Response ('<img src="../../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$img['image'].'" border="0" />');
+        }else{
+            $response = '<img src="../../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
+            foreach($img['errorList'] as $value){
+                    $response .= $value.', ';
+            }
+            return new Response ($response);
+        }
     }
 
-    public function getPromoInfoAction()
+    public function uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH)
     {
-        $request = $this->get('request');
-        $promo = $this->get('doctrine')->getRepository('EuroLiteriestructureBundle:Promotion')->find($request->request->get('id'));
-        return new Response($promo->getPromoInfo());
+        $tmp = explode('Controller',__DIR__);
+        $folder = $tmp[0].'Resources/public/images/slider/inactive/';
+        $filesize_image = $file->getClientSize();
+        if($filesize_image > 0){
+            $upload_image = AjaxController::uploadImage('euroliteriestructure', $file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH, true);
+            if(is_array($upload_image)){
+                foreach($upload_image as $key => $value) {
+                    if($value == "-ERROR-") {
+                        unset($upload_image[$key]);
+                    }
+                }
+                $document = array_values($upload_image);
+                for ($x=0; $x<sizeof($document); $x++){
+                    $errorList[] = $document[$x];
+                }
+                $imgUploaded = false;
+            }else{
+                $imgUploaded = true;
+            }
+        }else{
+            $imgUploaded = false;
+            $errorList[] = "File Size Empty";
+        }
+        if ($imgUploaded)
+        {
+            return array('imgUploaded' => true, 'image' => $upload_image);
+        }else
+        {
+            return array('imgUploaded' => false, 'errorList' => $errorList);
+        }
+    }
+    public function deleteImageAction(Array $param)
+    {
+        if ($param['lien'] == 'marquesAdmin')
+        {
+            $dossier = 'marques/';
+            AjaxController::deleteImage($dossier, $dossier, $param['png'], 'euroliteriestructure');
+        }else if ($param['lien'] == 'sliderAdmin')
+        {
+            $dossier = 'slider/';
+            $tmp = array();
+            foreach ($param['png'] as $png)
+            {
+                if (AjaxController::testNameValide($png, 'jpg|jpeg|png'))
+                {
+                    if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/active/', $png))
+                    {
+                        $dossierFile = $dossier.'active/';
+
+                    }else if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $png))
+                    {
+                        $dossierFile = $dossier.'inactive/';
+                    }
+                    AjaxController::deleteImage($dossier, $dossierFile, $png, 'euroliteriestructure');
+                }
+            }
+        }
+        return new Response();
+    }
+
+    public function uploadLogoAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH)
+    {
+        $tmp = explode('Controller',__DIR__);
+        $folder = $tmp[0].'Resources/public/images/marques/';
+        $filesize_image = $file->getClientSize();
+        if($filesize_image > 0){
+            $upload_image = AjaxController::uploadImage('euroliteriestructure', $file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH);
+            if(is_array($upload_image)){
+                foreach($upload_image as $key => $value) {
+                    if($value == "-ERROR-") {
+                        unset($upload_image[$key]);
+                    }
+                }
+                $document = array_values($upload_image);
+                for ($x=0; $x<sizeof($document); $x++){
+                    $errorList[] = $document[$x];
+                }
+                $imgUploaded = false;
+            }else{
+                $imgUploaded = true;
+            }
+        }else{
+            $imgUploaded = false;
+            $errorList[] = "File Size Empty";
+        }
+        if ($imgUploaded)
+        {
+            return array('imgUploaded' => true, 'image' => $upload_image);
+        }else
+        {
+            return array('imgUploaded' => false, 'errorList' => $errorList);
+        }
     }
 }

@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class PromotionRepo extends EntityRepository
 {
-    public function getHtml()
+    public function getHtml($param)
     {
         return '<div class="admin-c prom border">
                     <input type="hidden" name="id" value="%id%">
@@ -49,8 +49,8 @@ class PromotionRepo extends EntityRepository
         $promo->setTag('periode');
         $promo->setDateDebut(new \Datetime());
         $promo->setDateFin(new \Datetime('+7 days'));
-        $promo->setPromoInfo('Informations complémentaires');
-        $promo->setPromoDesc('Description de la promotion');
+        $promo->setPromoInfo('-90% !!');
+        $promo->setPromoDesc('Sur tout nos produits !');
         $em = $this->getEntityManager();
         $em->persist($promo);
         $em->flush();

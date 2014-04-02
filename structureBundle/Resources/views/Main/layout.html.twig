@@ -6,37 +6,34 @@
 
 <head>
 	<meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Euro Literie Mont-de-Marsan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Euro Literie Aquitaine</title>
     {%if keywords is defined%}
         <meta name="keywords" content="{{ keywords }}"/>
     {%endif%}
-    {%if app.session.get('mobile')%}
-        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-        <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/media-queries.css')}}">
-    {%else%}
-        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico')}}" />
-    {%endif%}
+
     <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/foundation.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/nivo-slider.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/normalize.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/euroliterie.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{asset('bundles/euroliteriestructure/css/monToolbar.css')}}">
     <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/fontawesome/css/font-awesome.css') }}" />
-    <link rel="stylesheet" href="{{ asset('bundles/euroliteriestructure/css/jquery-ui-1.10.4.custom.min.css') }}" />
-    <link href='http://fonts.googleapis.com/css?family=Volkhov' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery-ui-1.10.4.custom.min.css') }}" />
+    <link href='http://fonts.googleapis.com/css?family=Istok+Web' rel='stylesheet' type='text/css'>
     <script src="{{ asset('bundles/euroliteriestructure/js/jquery-2.0.3.min.js')}}"></script>
     <script src="{{ asset('bundles/euroliteriestructure/js/jquery-ready.js')}}"></script>
-    <script src="{{ asset('bundles/euroliteriestructure/js/jquery-ui-1.10.4.custom.min.js')}}"></script>
+    <script src="{{asset('bundles/yomaah/js/jquery-ui-1.10.4.custom.min.js')}}"></script>
     <script src="{{ asset('bundles/euroliteriestructure/js/jquery.nivo.slider.js')}}"></script>
 </head>
 <html>
 <body>
-    {%if literie_admin is defined and literie_admin%}
+    {%if connectClient is defined and connectClient%}
         {% include 'EuroLiteriestructureBundle:Main:barAdmin.html.twig' %}
     {%endif%}
     {%if app.session.get('mobile') %}
-        {% include 'EuroLiteriestructureBundle:Main:menuMobile.html.twig' %}
     {%else%}
+        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/main-bar.css') }}" />
+        {% include 'yomaahBundle:Main:main-bar1.html.twig' %}
         {% include 'EuroLiteriestructureBundle:Main:menu.html.twig' %}
     {%endif%}
     <div class="row">
@@ -60,7 +57,7 @@
             <a href="#top"><span></span></a>
         </div>
     {%endif%}
-    {%if literie_admin is defined and literie_admin%}
+    {%if connectClient is defined and connectClient%}
         {% include 'yomaahBundle:Toolbar:toolbar.html.twig' %}
         {% include 'yomaahBundle:Toolbar:addArticleToolBar.html.twig' %}
         <script type="text/javascript" src="{{asset('bundles/yomaah/js/monHallo.js')}}"></script>
@@ -69,7 +66,7 @@
 
         <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/bootstrap.icons.css') }}" />
         <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery.toolbars.css') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/euroliteriestructure/css/monToolbar.css') }}" />
+        {#<link rel="stylesheet" href="{{ asset('bundles/EuroLiteriestructure/css/monToolbar.css') }}" />#}
         <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />
         <script type="text/javascript" src="{{asset('bundles/yomaah/js/jquery.toolbar.js')}}"></script>
         <script>setAdminToolbar()</script>

@@ -22,7 +22,7 @@ class HoraireRepo extends MyXml
         return $horaires;
     }
     
-    public function save($elem)
+    public function save ($elem)
     {
         
     }

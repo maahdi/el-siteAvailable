@@ -19,20 +19,12 @@ $container->setDefinition(
 );
 
 */
-$container->setDefinition('literie_gestionMenu',
-    new Definition ('EuroLiterie\structureBundle\Classes\GestionMenu',
-        array(new Reference('service_container')))
-);
+//$container->setDefinition('literie_gestionMenu',
+    //new Definition ('EuroLiterie\structureBundle\Classes\GestionMenu',
+        //array(new Reference('doctrine.orm.entity_manager'), new Reference('database_connection'), new Reference('security.context'), new Reference('session')))
+//);
 
-//$container
-    //->register('kernel.listener.gestionErreur', 'EuroLiterie\structureBundle\Classes\GestionErreur', array(new Reference('templating')))
-    //->addTag('kernel.event_listener', array('event' => 'kernel.exception', 'method' => 'onKernelException'));
 
-$listener = new Definition('EuroLiterie\structureBundle\Classes\GestionErreur', 
-                array(new Reference('templating')));
-$listener->addTag('kernel.event_listener', array('event' => 'kernel.exception', 'method' => 'onKernelException'));
-$container->setDefinition('yomaah_exception',$listener);
-
-$menutwig = new Definition('EuroLiterie\structureBundle\Classes\MenuTwigExtension',array(new Reference('literie_gestionMenu')));
-$menutwig->addTag('twig.extension');
-$container->setDefinition('literie_menuTwigExtension',$menutwig);
+//$menutwig = new Definition('EuroLiterie\structureBundle\Classes\MenuTwigExtension',array(new Reference('literie_gestionMenu')));
+//$menutwig->addTag('twig.extension');
+//$container->setDefinition('literie_menuTwigExtension',$menutwig);

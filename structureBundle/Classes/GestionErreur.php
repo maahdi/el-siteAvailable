@@ -9,9 +9,10 @@ class GestionErreur
 {
     private $templating;
 
-    public function __construct($templating)
+    public function __construct($controller, $templating)
     {
         $this->templating = $templating;
+        $this->controller = $controller;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -21,7 +22,8 @@ class GestionErreur
         $response = new Response();
         if (preg_match('/NotFoundHttpException/',get_class($exception)) == 1)
         {
-            $message = $this->templating->render('EuroLiteriestructureBundle:Main:error404.html.twig');
+            $message = $this->controller->routeNotFoundAction($this->templating);
+            //$message = $this->templating->render('EuroLiteriestructureBundle:Main:error404.html.twig');
         }else
         {
             $message = $exception->getMessage();
