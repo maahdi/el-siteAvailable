@@ -20,30 +20,7 @@ class MainController extends Controller implements AjaxInterface
 
     public function accueilAction()
     {
-        $promotions = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:Promotion')->findBy(array('tag'=>'periode'), array('dateDebut' => 'asc'));
         $params = $this->getParams('literie_accueil');
-        $i =0;
-        $actuel = false;
-        foreach ($promotions as $promo)
-        {
-            if ($promo->getActuel())
-            {
-                $actuel[] = $promo;
-            }
-        }
-        $file = AjaxController::imageSearch('/slider/active', 'EuroLiterie/structureBundle');
-        if (count($file) < 5)
-        {
-            $params['slider'] = AjaxController::imageSearch('/slider/active', 'EuroLiterie/structureBundle');
-        }else
-        {
-            for ($i = 0; $i < 4; $i++)
-            {
-                $tmpFile[] = $file[$i];
-            }
-            $params['slider'] = $tmpFile;
-        }
-        $params['actuel'] = $actuel;
         //$params['avenir'] = $avenir;
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:accueil.html.twig', $params);
     }
@@ -90,7 +67,7 @@ class MainController extends Controller implements AjaxInterface
 
     public function magasinAction()
     {
-        $params = $this->getParams('magasin');
+        $params = $this->getParams('literie_magasin');
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:magasin.html.twig',$params);
     }
 
