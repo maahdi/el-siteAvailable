@@ -1,6 +1,6 @@
 {% extends 'EuroLiteriestructureBundle:Main:layout.html.twig' %}
 {%block body%}
-    <div class="articles small-7 columns">
+    <div class="articles">
         {%for article in articles%}
             <article class="article">
                 <input type="hidden" name="id" value="{{article.id}}"/>
@@ -18,9 +18,11 @@
                                 <figure class="marque-img"><img src="{{asset('bundles/euroliteriestructure/images/marques/'~marque.pngUrl)}}"></img></figure>
                                 <section class="content">
                                     <article class="marque-content">
-                                        <p>{{marque.content | raw}}</p></article>
+                                        <p>{{marque.content | raw}}</p>
+                                    </article>
                                     <article class="marque-link">
-                                        <a href="http://{{marque.marqueLien}}">{{marque.marqueLien}}</a></article>
+                                        <a href="http://{{marque.marqueLien}}">{{marque.marqueLien}}</a>
+                                    </article>
                                 </section>
                             </article>
                         </section>

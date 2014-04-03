@@ -24,7 +24,6 @@ class GestionMenu
     {
         if (!($this->dispatcher->testException()))
         {
-
             if ($this->dispatcher->isClientSite())
             {
                 $promotions = $this->em->getRepository('EuroLiteriestructureBundle:Promotion')
@@ -52,6 +51,9 @@ class GestionMenu
                 }
                 $params['actuel'] = $actuel;
                 return $params;
+            }else
+            {
+                return array();
             }
         }
     }

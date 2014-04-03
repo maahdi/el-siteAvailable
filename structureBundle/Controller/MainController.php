@@ -21,7 +21,6 @@ class MainController extends Controller implements AjaxInterface
     public function accueilAction()
     {
         $params = $this->getParams('literie_accueil');
-        //$params['avenir'] = $avenir;
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:accueil.html.twig', $params);
     }
 
@@ -68,6 +67,7 @@ class MainController extends Controller implements AjaxInterface
     public function magasinAction()
     {
         $params = $this->getParams('literie_magasin');
+        $params['images'] = AjaxController::imageSearch('galerie', 'EuroLiterie/structureBundle');
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:magasin.html.twig',$params);
     }
 
@@ -215,23 +215,35 @@ class MainController extends Controller implements AjaxInterface
 
     public function getAdminContentStructureAction(Array $param)
     {
-        if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
+        $dispatcher = $this->get('bundleDispatcher');
+        if ($dispatcher->isAdmin())
         {
-            $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getHtml($this->getDeployedImagesUrl()); 
-        }else if ($param['lien'] == 'GkeywordsAdmin')
+            if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
+            {
+                $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getHtml($this->getDeployedImagesUrl()); 
+
+            }else if ($param['lien'] == 'GkeywordsAdmin')
+            {
+                $keyRepo = new KeywordsRepo();
+                $response = $keyRepo->getHtml();
+
+            }else if ($param['lien'] == 'sliderAdmin')
+            {
+                $response = $this->get('templating')
+                    ->render('EuroLiteriestructureBundle:Ajax:imagesSlider.html.twig',array('url' => $this->getDeployedImagesUrl()));
+
+            }else if ($param['lien'] == 'sliderMiniature')
+            {
+                $response = '<article class="sliderImage">
+                        <input type="hidden" value="" />
+                        <figure><img src=""></img></figure>
+                        <input type="checkbox" name="check"/>
+                    </article>';
+            }           
+        }else if ($param['lien'] == 'promoInfo')
         {
-            $keyRepo = new KeywordsRepo();
-            $response = $keyRepo->getHtml();
-        }else if ($param['lien'] == 'sliderAdmin')
-        {
-            $response = $this->get('templating')->render('EuroLiteriestructureBundle:Ajax:imagesSlider.html.twig',array('url' => $this->getDeployedImagesUrl()));
-        }else if ($param['lien'] == 'sliderMiniature')
-        {
-            $response = '<article class="sliderImage">
-                    <input type="hidden" value="" />
-                    <figure><img src=""></img></figure>
-                    <input type="checkbox" name="check"/>
-                </article>';
+            $promo = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:Promotion')->find($param['id']);
+            $response = '<div><p>'.$promo->getPromoInfo().'</p></div>';
         }
         return new Response($response);
     }
@@ -245,6 +257,7 @@ class MainController extends Controller implements AjaxInterface
         }else if ($param['lien'] == 'sliderAdmin')
         {
             $filename = $param['dialog'].'Slider';
+
         }
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Dialog:'.$filename.'.html.twig');
     }
@@ -279,7 +292,9 @@ class MainController extends Controller implements AjaxInterface
                     <input type="checkbox" name="check"/>
                 </article>';
             return new JsonResponse($slider);
+
         }
+
     }
 
     public function deleteLogoAction($param)
@@ -371,9 +386,9 @@ class MainController extends Controller implements AjaxInterface
             $img = $this->uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH);
         }
         if($img['imgUploaded'] === true){
-            return new Response ('<img src="../../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$img['image'].'" border="0" />');
+            return new Response ('<img src="../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$img['image'].'" border="0" />');
         }else{
-            $response = '<img src="../../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
+            $response = '<img src="../bundles/euroliteriestructure/images/error.gif" width="16" height="16px" border="0" style="marin-bottom: -3px;" /> Error(s) Found: ';
             foreach($img['errorList'] as $value){
                     $response .= $value.', ';
             }

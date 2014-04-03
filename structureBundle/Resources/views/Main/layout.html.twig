@@ -32,6 +32,8 @@
     {%endif%}
     {%if app.session.get('mobile') %}
     {%else%}
+        {#<link rel="stylesheet" href="{{ asset('bundles/yomaah/css/main-bar.css') }}" />#}
+        {#{% include 'yomaahBundle:Main:main-bar1.html.twig'%}#}
         {% include 'EuroLiteriestructureBundle:Main:menu.html.twig' %}
     {%endif%}
     <div class="row">
@@ -43,12 +45,19 @@
         <div id="corps-border" class="border-radius small-12 columns">
             <div id="corps">
                 <div class="row">
+                    <div class="small-12 columns">
+                        <div class="bandeau-pub">
+                            <figure><img src="{{ asset('bundles/euroliteriestructure/images/page_cetelem.jpg')}}" /></figure>
+                            <figure><img src="{{ asset('bundles/euroliteriestructure/images/logo-livraison-gratuite.png')}}" /></figure>
+                        </div>
+                    </div>
     {%block body%}
     {%endblock%}
         {%if hide is defined and hide%}
         </div>
         {%else%}
-                <div class="small-5 columns">
+                <div class="">
+                {#<div class="small-5 columns">#}
                     <div id="border">
                         <div class="slide slider-wrapper futurico-theme">
                             <div id="slider" class="nivoSlider">
@@ -67,10 +76,18 @@
                                     <section class="promo-background">
                                 {%if actuel != false%}
                                     {%for promotion in actuel%}
+                                        <input type="hidden" value="{{promotion.id}}" />
                                         <article class="promo-date"><h2>Du {{promotion.dateDebut}} au {{promotion.dateFin}}</h2></article>
                                         <section class="promo-content"><p>{{promotion.PromoDesc | raw}}</p>
                                         </section>
-                                        <a class="a-promotion" ref=#>Plus d'infos ...</a>
+                                        {%if app.session.get('mobile') == false%}
+                                            <a id="a-promotion" ref=#>Plus d'infos ...</a>
+                                            <script type="text/javascript">
+                                                document.getElementById('a-promotion').onclick =function(){
+                                                 openWindow(this,'ajax/adminContentStructure', '500', '300');
+                                                }
+                                            </script>
+                                        {%endif%}
                                     {%endfor%}
                                 {%else%}
                                     <article class="promo-date"><h2>Aucune promotions en cours</h2></article>
