@@ -1,6 +1,9 @@
 @font-face
 {
-    font-family :'Istok Web' , serif;
+    font-family :"IstokWeb";
+    src: url('istok_web/istokweb-regular-webfont.eot');
+    src: url('istok_web/istokweb-regular-webfont.eot?#iefix'),
+         url('istok_web/istokweb-regular-webfont.ttf');
 }
 /*#banniere*/
 /*{*/
@@ -14,7 +17,7 @@
 body
 {
     font-size :1em;
-    font-family : "Istok Web";
+    font-family : "IstokWeb";
     /*background-color: #a5aabf;*/
     background-color :#fff;
 }
@@ -22,7 +25,7 @@ body
 a,p,li,
 h1,h2,h3,h4,h5,h6
 {
-    font-family:"Istok Web";
+    font-family:"IstokWeb";
 }
 .courrier p:first-child:before
 {
