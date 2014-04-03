@@ -24,6 +24,17 @@
     <script src="{{ asset('bundles/euroliteriestructure/js/jquery-ready.js')}}"></script>
     <script src="{{asset('bundles/yomaah/js/jquery-ui-1.10.4.custom.min.js')}}"></script>
     <script src="{{ asset('bundles/euroliteriestructure/js/jquery.nivo.slider.js')}}"></script>
+    {%if connectClient is defined and connectClient%}
+        <script type="text/javascript" src="{{asset('bundles/yomaah/js/monHallo.js')}}"></script>
+        <script src="{{asset('bundles/yomaah/js/rangy-core.js')}}"></script>
+        <script src="{{asset('bundles/yomaah/js/hallo.js')}}"></script>
+
+        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/bootstrap.icons.css') }}" />
+        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery.toolbars.css') }}" />
+        {#<link rel="stylesheet" href="{{ asset('bundles/EuroLiteriestructure/css/monToolbar.css') }}" />#}
+        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />
+        <script type="text/javascript" src="{{asset('bundles/yomaah/js/jquery.toolbar.js')}}"></script>
+    {%endif%}
 </head>
 <html>
 <body>
@@ -118,15 +129,15 @@
     {%if connectClient is defined and connectClient%}
         {% include 'yomaahBundle:Toolbar:toolbar.html.twig' %}
         {% include 'yomaahBundle:Toolbar:addArticleToolBar.html.twig' %}
-        <script type="text/javascript" src="{{asset('bundles/yomaah/js/monHallo.js')}}"></script>
-        <script src="{{asset('bundles/yomaah/js/rangy-core.js')}}"></script>
-        <script src="{{asset('bundles/yomaah/js/hallo.js')}}"></script>
+        {#<script type="text/javascript" src="{{asset('bundles/yomaah/js/monHallo.js')}}"></script>#}
+        {#<script src="{{asset('bundles/yomaah/js/rangy-core.js')}}"></script>#}
+        {#<script src="{{asset('bundles/yomaah/js/hallo.js')}}"></script>#}
 
-        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/bootstrap.icons.css') }}" />
-        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery.toolbars.css') }}" />
-        {#<link rel="stylesheet" href="{{ asset('bundles/EuroLiteriestructure/css/monToolbar.css') }}" />#}
-        <link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />
-        <script type="text/javascript" src="{{asset('bundles/yomaah/js/jquery.toolbar.js')}}"></script>
+        {#<link rel="stylesheet" href="{{ asset('bundles/yomaah/css/bootstrap.icons.css') }}" />#}
+        {#<link rel="stylesheet" href="{{ asset('bundles/yomaah/css/jquery.toolbars.css') }}" />#}
+        {#[><link rel="stylesheet" href="{{ asset('bundles/EuroLiteriestructure/css/monToolbar.css') }}" /><]#}
+        {#<link rel="stylesheet" href="{{ asset('bundles/yomaah/css/adminInterface.css') }}" />#}
+        {#<script type="text/javascript" src="{{asset('bundles/yomaah/js/jquery.toolbar.js')}}"></script>#}
         <script>setAdminToolbar()</script>
     {%endif%}
 </body>

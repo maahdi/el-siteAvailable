@@ -37,7 +37,7 @@ $collection->add('admin_literie_contact', new Route('/admin_contact', array(
 )));
 
 $collection->add('admin_literie_magasin', new Route('/admin_magasin', array(
-    '_controller' => 'EuroLiteriestructureBundle:Main:accueil'
+    '_controller' => 'EuroLiteriestructureBundle:Main:magasin'
 )));
 /**
  * A enlever et dans menu.html.twig
