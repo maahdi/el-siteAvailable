@@ -55,7 +55,58 @@ h1,h2,h3,h4,h5,h6
 /*.map*/
 
 
-/*.article table*/
+.article table
+{
+    margin-top:1em;
+    margin-left:4em;
+    width:62%;
+}
+.article h2
+{
+    font-size :1.5em;
+}
+.personne
+{
+    width:30%;
+    display:inline-block;
+    position:relative;
+    height : auto;
+}
+.galerie-photo
+{
+    width:100%;
+    /*padding-left:3em;*/
+    /*margin-top:0.5em;*/
+    position : relative;
+    display: block;
+    height:auto;
+}
+.galerie-photo figure
+{
+    width:40%;
+    margin-left:3.5em;
+    margin-top :1em;
+    display:inline-block;
+    position:relative;
+}
+.galerie-photo img
+{
+    display:inline-block;
+    width:100%;
+    position:relative;
+}
+.art-sscontent
+{
+    font-size : 0.8em;
+    margin-top:0.5em;
+    padding-left:1em;
+}
+.imgEquipe
+{
+    width : 80%;
+    padding-left:1em;
+    height:auto;
+}
 
 
 /*.article table tr*/
@@ -78,28 +129,61 @@ h1,h2,h3,h4,h5,h6
 /*.art-adresse*/
 
 
-/*.form-email*/
+.form-email
+{
+    padding-left : 4em;
+    margin-top : 2em;
+    width : 70%;
+    height : auto;
+}
 
+.form-email label,
+.form-email input
+{
+    display: block;
+}
 
-/*.form-email label,*/
-/*.form-email input*/
+.form-email label
+{
+    margin-bottom : 0.5em;
+}
 
+.form-email input
+{
+    height : 2.5em;
+}
 
-/*.form-email label*/
+.form-email textarea
+{
+    height : 9em;
+    font-size : 0.8em;
+}
+.admin-content input, .admin-content textarea,
+.form-email input, .form-email textarea
+{
+    -moz-border-radius:0px 0 0 0px; 
+    -webkit-border-radius:0px 0 0 0px; 
+    border-radius:5px 5px 5px 5px; 
+}
+.form-email input[type=submit]
+{
+    margin-top : 1.5em;
+    width : 100%;
+    background-color:#2a4674;
+    border-color:#2a4674;
+    font-weight:bold;
+    color:#e4f30c;
+    -webkit-transition: color .2s ease-in-out;
+    -moz-transition: color .2s ease-in-out;
+    -o-transition: color .2s ease-in-out;
+    -ms-transition: color .2s ease-in-out;
+    transition: color .2s ease-in-out;
+}
 
-
-/*.form-email input*/
-
-
-/*.form-email textarea*/
-
-/*.admin-content input, .admin-content textarea,*/
-/*.form-email input, .form-email textarea*/
-
-/*.form-email input[type=submit]*/
-
-
-/*.form-email input[type=submit]:hover*/
+.form-email input[type=submit]:hover
+{
+    color: #0e9c07;    
+}
 
 
 #corps-border

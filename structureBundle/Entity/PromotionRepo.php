@@ -18,9 +18,9 @@ class PromotionRepo extends EntityRepository
                     <input type="hidden" name="id" value="%id%">
                     <section class="contentPromo">
                         <article class="adminPromo">
-                            <label>Date de début :</label><input class="datepickerDebut" type="text" name="dateDebut" value="%dateDebut%"/>
+                            <label>Date de début :</label><input class="datepickerDebut" type="text" name="dateDebut" value="%dateDebut%" />
                             <label>Date de fin :</label><input class="datepickerFin" type="text" name="dateFin" value="%dateFin%"/>
-                            <label>Entête :</label><input class="PromoDesc" name="PromoDesc" value="%PromoDesc%"/>
+                            <label>Entête :</label><input  name="PromoDesc" value="%PromoDesc%" />
                         </article>
                         <article class="adminPromoInfo">
                             <label>Description :</label><textarea class="textareaPromo" name="promoInfo">%promoInfo%</textarea>

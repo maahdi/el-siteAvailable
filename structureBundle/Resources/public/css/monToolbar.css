@@ -81,3 +81,26 @@
     position :fixed;
     display:block;
 }
+
+.adminTitre
+{
+    position : relative;
+    display : inline-block;
+    width : 100%;
+    height :3em;
+
+}
+/*.adminTitre section*/
+/*{*/
+    /*display:inline-block;*/
+    /*width:50%;*/
+    /*position:relative;*/
+/*}*/
+.adminTitre section,
+.adminTitre h2
+{
+    display:inline-block;
+    width:50%;
+    position:relative;
+    font-size:1.3em;
+}

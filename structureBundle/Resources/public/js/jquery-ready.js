@@ -560,7 +560,12 @@ $(document).on('click', '.add-btn', function (){
                 }
                 i++;
             });
+            var titre = $('.contentI').children('article').first();
+            $('.contentI').children('article').first().remove();
+            var classTitre = titre.attr('class');
+            console.log(titre);
             $('.contentI').prepend(article);
+            $('.contentI').prepend('<article class="'+classTitre+'">'+titre.html()+'</article>');
             $('.datepickerDebut').datepicker({ maxDate : $('.datepickerFin').val(),
                                             dateFormat : "dd/mm/yy"});
             $('.datepickerFin').datepicker({ minDate : $('.datepickerDebut').val(),

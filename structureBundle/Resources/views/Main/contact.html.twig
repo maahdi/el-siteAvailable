@@ -4,7 +4,6 @@
     <div class="articles">
         {%for article in articles%}
             {%if article.tagName == 'map' %}
-            {%elseif article.tagName == 'adresse_courrier'%}
            {#or article.tagName == 'adresse_phone'%}#}
                 <div id="googleMap" class="article border-article marge">
                     <input type="hidden" name="id" value="Google Map"/>
@@ -18,12 +17,14 @@
                         </embed>
                     </section>
                     <div class="art-adresse">
-                        <input type="hidden" name="id" value="{{article.id}}"/>
-                        {%if article.tagname == 'adresse_courrier'%}
-                            <article class="art-content courrier">{{ article.artContent | raw}}</article>
-                        {%elseif article.tagName == 'adresse_phone'%}
-                            <article class="art-content phone">{{ article.artContent | raw }}</article>
-                        {%endif%}
+                        {%for addr in adresse%}
+                            <input type="hidden" name="id" value="{{addr.id}}"/>
+                            {%if addr.tagName == 'adresse_courrier'%}
+                                <article class="art-content courrier">{{ addr.artContent | raw}}</article>
+                            {%elseif addr.tagName == 'adresse_phone'%}
+                                <article class="art-content phone">{{ addr.artContent | raw }}</article>
+                            {%endif%}
+                        {%endfor%}
                     </div>
                 </div>
             {%elseif article.tagName == 'horaire'%}
@@ -41,6 +42,9 @@
                             <td>{{ horaire.getMatin('debut')}} à {{ horaire.getMatin('fin')}} - {{ horaire.getAprem('debut')}} à {{ horaire.getAprem('fin')}}</td>
                         </tr>
                         {%endfor%}
+                        <tr>
+                            <td class="fermer">Fermeture le dimanche</td>
+                        </tr>
                         </table>
                     </article>
                 </div>

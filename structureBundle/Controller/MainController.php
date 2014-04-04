@@ -96,6 +96,15 @@ class MainController extends Controller implements AjaxInterface
             $envoi = true;
         }
         $params = $this->getParams('literie_contact');
+        $tmp = array();
+        foreach ($params['articles'] as $article)
+        {
+            if ($article->getTagName() == 'adresse_courrier' || $article->getTagName() == 'adresse_phone')
+            {
+                $tmp[] = $article;
+            }
+        }
+        $params['adresse'] = $tmp;
         $h = new HoraireRepo();
         $params['horaires'] = $h->getHoraires();
         $params['form'] = $form->createView();

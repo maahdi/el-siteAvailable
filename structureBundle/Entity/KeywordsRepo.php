@@ -29,7 +29,7 @@ class KeywordsRepo extends MyXml
     {
         return '<div class="Gkeywords admin-c border">
                     <section class="adminGkeywords">
-                        <label>Mots-clés généraux</label><textarea class="textareaGkeywords" name="Gkeywords">'.$this->getGeneralKeywords().'</textarea>
+                        <h2>Mots-clés généraux</h2><textarea class="textareaGkeywords" name="Gkeywords">'.$this->getGeneralKeywords().'</textarea>
                     </section>
                     <section class="btn-adminPanel">
                         <article class="btn-admin maj-Gkeywords">
