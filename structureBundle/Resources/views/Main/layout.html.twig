@@ -42,6 +42,7 @@
         {% include 'EuroLiteriestructureBundle:Main:barAdmin.html.twig' %}
     {%endif%}
     {%if app.session.get('mobile') %}
+        {% include 'EuroLiteriestructureBundle:Main:menu.html.twig' %}
     {%else%}
         {#<link rel="stylesheet" href="{{ asset('bundles/yomaah/css/main-bar.css') }}" />#}
         {#{% include 'yomaahBundle:Main:main-bar1.html.twig'%}#}
