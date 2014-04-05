@@ -2,8 +2,8 @@
 <div class="row">
     <div class="small-12 columns">
         <ul class="literie-menu" id="menu-left">
-            {%if menus is defined%}
-                {%for menu in menus%}
+            {%if menusClient is defined%}
+                {%for menu in menusClient%}
                     {%if  menu.path == 'literie_marques'%}
                         <li><a href="{{path(menu.path)}}#Epeda">{{ menu.name }}</a>
                     {%else%}

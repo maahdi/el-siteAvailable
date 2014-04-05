@@ -1017,7 +1017,194 @@ footer
     width:100%;
     height:100%;
 }
-/*@media screen and (max-width:780px)*/
 
-/*@media screen and (max-width:780px) and ( orientation : landscape)*/
+
+
+@media screen and (max-width:780px)
+{
+body
+{
+    font-size :0.6em;
+}
+.literie-menu
+{
+    width:105.3%;
+    margin-left : -1em;
+    height :3.5em;
+}
+#border
+{
+    width:35%;
+    left:-0em;
+}
+.articles
+{
+    width:57%;
+}
+.bandeau-pub
+{
+    height : 5em;
+}
+.futurico-theme .nivoSlider
+{
+    width:107.9%;
+    left:-0.5em;
+}
+.slide
+{
+    /*width : 90%;*/
+}
+.promo-titre h2,
+.art-titre h1
+{
+    font-size : 1em;
+}
+
+.art-titre h1
+{
+    padding-top:0.4em;
+}
+.article table
+{
+    margin-left:2em;
+    width:82%;
+}
+.futurico-theme .nivoSlider img
+{
+    /*height : 2em;*/
+    /*width:100%;*/
+    width:auto;
+    min-height : 68px;
+    max-height:68px;
+    top:0;
+    left:0;
+}
+#div-pos
+{
+    margin-top:0em;
+}
+.marque
+{
+    height : 700px;
+}
+#corps
+{
+    overflow:hidden;
+}
+.map embed iframe
+{
+    height:50px;
+}
+.promo-date h2
+{
+    font-size : 0.8em;
+}
+.promo-titre
+{
+    height:3em;
+}
+.promo-content
+{
+    font-size :0.7em;
+}
+.article h2
+{
+    font-size :0.8em;
+}
+.form-email
+{
+    padding-left : 2em;
+    margin-top : 2em;
+    width : 80%;
+    height : auto;
+}
+.art-sscontent
+{
+    font-size :0.6em;
+    text-align :left;
+}
+.personne
+{
+    width : 40%;
+}
+html
+{
+    height:100%;
+}
+.literie-menu li
+{
+    height : 3.5em;
+}
+.literie-menu li a
+{
+    line-height :2.5em;
+}
+
+}
+
+@media screen and (max-width:780px) and ( orientation : landscape)
+{
+.map embed iframe
+{
+    height:100px;
+}
+.promo-date h2
+{
+    font-size : 1.1em;
+}
+.promo-titre
+{
+    height:3em;
+    margin-top:0.5em;
+}
+.promo-content
+{
+    font-size :0.8em;
+}
+.article h2
+{
+    font-size :0.9em;
+}
+.bandeau-pub
+{
+    height : 7em;
+}
+.promo-titre h2,
+.art-titre h1
+{
+    font-size : 1.2em;
+}
+.articles
+{
+    width :58%;
+}
+
+.art-titre h1
+{
+    padding-top:0.3em;
+}
+.futurico-theme .nivoSlider img
+{
+    /*height : 2em;*/
+    /*width:100%;*/
+    width:auto;
+    min-height : 98;
+    max-height:98px;
+    top:0;
+    left:0;
+}
+.vertical :target
+{
+    height:300px;
+}
+.marque section:target section
+{
+    height:300px;
+}
+.art-sscontent
+{
+    font-size : 0.9em;
+}
+
+}
 
