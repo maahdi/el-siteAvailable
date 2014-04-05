@@ -454,12 +454,12 @@ footer
 .triangle-bot
 {
     width:1.0em;
-    height:1.2em;
+    height:1.1em;
     position:absolute;
     left:75.0%;
-    top:0.4em;
+    top:0.5em;
     border-left:1.0em solid #2a4674;
-    border-top:1.2em solid transparent;
+    border-top:1.1em solid transparent;
 
 }
 .triangle-top
@@ -1138,6 +1138,13 @@ html
 .literie-menu li a
 {
     line-height :2.5em;
+}
+.triangle-bot
+{
+
+    height:1.2em;
+    top:0.5em;
+    border-top:1.2em solid transparent;
 }
 
 }
