@@ -42,7 +42,7 @@
         {% include 'EuroLiteriestructureBundle:Main:barAdmin.html.twig' %}
     {%endif%}
     {%if app.session.get('mobile') %}
-        {% include 'EuroLiteriestructureBundle:Main:menu.html.twig' %}
+        {% include 'EuroLiteriestructureBundle:Main:menuMobile.html.twig' %}
     {%else%}
         {#<link rel="stylesheet" href="{{ asset('bundles/yomaah/css/main-bar.css') }}" />#}
         {#{% include 'yomaahBundle:Main:main-bar1.html.twig'%}#}
@@ -60,7 +60,7 @@
                     <div class="small-12 columns">
                         <div class="bandeau-pub">
                             <figure><img src="{{ asset('bundles/euroliteriestructure/images/page_cetelem.jpg')}}" /></figure>
-                            <figure><img src="{{ asset('bundles/euroliteriestructure/images/logo-livraison-gratuite.png')}}" /></figure>
+                            <figure><img src="{{ asset('bundles/euroliteriestructure/images/logo-livraison.png')}}" /></figure>
                         </div>
                     </div>
     {%block body%}

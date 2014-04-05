@@ -574,6 +574,11 @@ $(document).on('click', '.add-btn', function (){
     
     });
 });
+$(document).on('click', '.att-btn', function(){
+    sendAjax('ajax/atteindre', function(data){
+        window.location.replace(data);
+    }, { 'lien': lien});
+});
 var img = null;
 $(document).on('click', '.modif', function(){
     var pngActuel = $(this).parent().children('figure').children('img').attr('src').match(/([a-zA-Z0-9]+\-[a-zA-Z0-9]+|[a-zA-Z0-9]+)\.(png|jpg|jpeg)/);

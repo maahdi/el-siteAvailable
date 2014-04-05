@@ -18,6 +18,6 @@ class MenuTwigExtension extends \Twig_Extension
 
     public function getGlobals()
     {
-        return $this->menu->getSlider();
+        return $this->menu->getMenu();
     }
 }

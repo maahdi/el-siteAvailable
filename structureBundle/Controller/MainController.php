@@ -112,6 +112,19 @@ class MainController extends Controller implements AjaxInterface
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:contact.html.twig', $params);
     }
 
+    public function atteindreAction(Array $param)
+    {
+        $url = $param['url'];
+        if ($param['lien'] == 'marquesAdmin')
+        {
+            $url .= '/admin_marques';
+        }else
+        {
+            $url .= '/admin_accueil';
+        }
+        return new Response($url);
+    }
+
     private function getForm($mail)
     {
         $formBuilder = $this->createFormBuilder($mail);
