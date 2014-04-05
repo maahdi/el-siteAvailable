@@ -1069,13 +1069,21 @@ body
     margin-left:2em;
     width:82%;
 }
+.futurico-theme .nivoSlider
+{
+    width : 129.5px;
+    height:64.75px;
+}
 .futurico-theme .nivoSlider img
 {
     /*height : 2em;*/
     /*width:100%;*/
-    width:auto;
-    min-height : 68px;
-    max-height:68px;
+    /*width:auto;*/
+    /*min-width:150px;*/
+    /*max-width:150px;*/
+    /*height:auto;*/
+    min-height : 64.75px;
+    /*max-height:90px;*/
     top:0;
     left:0;
 }
@@ -1194,13 +1202,18 @@ html
 {
     padding-top:0.3em;
 }
+.futurico-theme .nivoSlider
+{
+    width : 213.5px;
+    height :113.5px;
+}
 .futurico-theme .nivoSlider img
 {
     /*height : 2em;*/
     /*width:100%;*/
     width:auto;
-    min-height : 98;
-    max-height:98px;
+    min-height : 96px;
+    max-height:96px;
     top:0;
     left:0;
 }
