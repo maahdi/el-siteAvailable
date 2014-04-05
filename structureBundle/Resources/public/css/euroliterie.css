@@ -1028,7 +1028,7 @@ body
 }
 .literie-menu
 {
-    width:105.3%;
+    width:105.5%;
     margin-left : -1em;
     height :3.5em;
 }
@@ -1151,6 +1151,10 @@ html
 
 @media screen and (max-width:780px) and ( orientation : landscape)
 {
+.literie-menu
+{
+    width :103%;
+}
 .map embed iframe
 {
     height:100px;
@@ -1211,6 +1215,10 @@ html
 .art-sscontent
 {
     font-size : 0.9em;
+}
+.galerie-photo figure
+{
+    margin-left :1.5em;
 }
 
 }
