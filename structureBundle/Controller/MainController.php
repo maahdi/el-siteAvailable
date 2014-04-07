@@ -225,6 +225,16 @@ class MainController extends Controller implements AjaxInterface
             $em->remove($element);
             $em->flush();
             return new Response();
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $em = $this->getDoctrine()->getManager();
+            $dispatcher = $this->get('bundleDispatcher');
+            $param['idSite'] = $dispatcher->getIdSite();
+            $param['tag'] = 'equipe';
+            $element = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findOneByTag($param);
+            $em->remove($element);
+            $em->flush();
+            return new Response();
         }
     }
 
@@ -233,6 +243,23 @@ class MainController extends Controller implements AjaxInterface
         if (($repo = $this->getRepoAdminContentList($param['lien'])) != false)
         {
             $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->getNew();
+            return new JsonResponse($element);
+
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $dispatcher = $this->get('bundleDispatcher');
+            $param['page'] = $this->getDoctrine()->getRepository('yomaahBundle:Page')
+                    ->findPageByUrl(array('pageUrl' => 'literie_magasin', 'idSite' => $dispatcher->getIdSite()));
+            $param['idSite'] = $dispatcher->getIdSite();
+            $param['position'] = '1';
+            $element = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findDefaultArticle($param);
+            $element->setPng($this->getDoctrine()->getRepository('yomaahBundle:Png')->find(1));
+            $element->setArtTitle('JobTitle');
+            $element->setArtContent('Nom - Prénom');
+            $element->setTagName('equipe');
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($element);
+            $em->flush();
             return new JsonResponse($element);
         }
     }
