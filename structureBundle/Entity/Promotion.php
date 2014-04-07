@@ -70,7 +70,7 @@ class Promotion implements JsonSerializable
             'PromoDesc' => $this->PromoDesc,
             'dateDebut' => $this->getDateDebut(),
             'dateFin' => $this->getDateFin(),
-            'promoInfo' => $this->getPromoInfo());
+            'promoInfo' => str_replace('<br />', '', $this->getPromoInfo()));
     }
 
     /**

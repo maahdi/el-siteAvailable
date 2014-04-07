@@ -7,11 +7,13 @@
                 <article class="triangle-bot"></article>
                 <section class="art-content not-editable">
                 {%for article in articles if article.tagName == 'equipe'%}
-                <article class="personne">
+                <article class="personne" itemscope itemtype="http://www.data-vocabulary.org/Person">
                     <input type="hidden" name="id" value="{{article.id}}"/>
-                    <article class="art-sstitre"><h2>{{ article.artTitle}}</h2></article>
-                    <figure class="imgEquipe"><img src="{{asset('bundles/euroliteriestructure/images/castor.jpg')}}" /></figure>
-                    <article class="art-sscontent">{{ article.artContent | raw}}</article>
+                    <article class="art-sstitre"><h2 itemprop="jobTitle">{{ article.artTitle}}</h2></article>
+                    <figure class="imgEquipe">
+                        <img itemprop="image" src="{{asset('bundles/euroliteriestructure/images/galerie/equipe/'~article.png.pngUrl)}}" />
+                    </figure>
+                    <article class="art-sscontent" itemprop="name">{{ article.artContent | raw}}</article>
                 </article>
                 {%endfor%}
                 </section>
@@ -25,9 +27,11 @@
                     <section class="art-content">{{article.artContent | raw}}
                     </section>
                     <article class="galerie-photo">
-                        {%for image in images%}
-                            <figure><img alt="Magasin Euro Literie" src="{{ asset('bundles/euroliteriestructure/images/galerie/'~image)}}" /></figure>
-                        {%endfor%}
+                    {%for image in images%}
+                        <figure>
+                            <img alt="Magasin Euro Literie" src="{{ asset('bundles/euroliteriestructure/images/galerie/magasin/active/'~image)}}" />
+                        </figure>
+                    {%endfor%}
                     </article>
                 </article>
             {%endfor%}

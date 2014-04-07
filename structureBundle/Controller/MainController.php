@@ -67,7 +67,7 @@ class MainController extends Controller implements AjaxInterface
     public function magasinAction()
     {
         $params = $this->getParams('literie_magasin');
-        $params['images'] = AjaxController::imageSearch('galerie', 'EuroLiterie/structureBundle');
+        $params['images'] = AjaxController::imageSearch('galerie/magasin/active', 'EuroLiterie/structureBundle');
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Main:magasin.html.twig',$params);
     }
 
@@ -118,6 +118,11 @@ class MainController extends Controller implements AjaxInterface
         if ($param['lien'] == 'marquesAdmin')
         {
             $url .= '/admin_marques';
+
+        }else if ($param['lien'] == 'magasinAdmin' || $param['lien'] == 'equipeAdmin')
+        {
+            $url .= '/admin_magasin';
+
         }else
         {
             $url .= '/admin_accueil';
@@ -171,13 +176,14 @@ class MainController extends Controller implements AjaxInterface
         {
             $element = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->find($param['id']); 
             $em = $this->getDoctrine()->getManager();
-            if ($param['input'] != false)
+            if ($param['input'] != null)
             {
                 foreach($param['input'] as $key => $input)
                 {
                     $element->$key($input);
                 }
-            }else if ($param['textarea'] != false)
+            }
+            if ($param['textarea'] != null)
             {
                 foreach($param['textarea'] as $key => $input)
                 {
@@ -187,9 +193,26 @@ class MainController extends Controller implements AjaxInterface
             $em->persist($element);
             $em->flush();
             return new Response();
+
         }else if ($param['lien'] == 'sliderAdmin')
         {
-            return $this->saveSlider($param['active'], $param['inactive']);
+            return $this->saveSlider($param['active'], $param['inactive'], 'slider');
+
+        }else if ($param['lien'] == 'magasinAdmin')
+        {
+            return $this->saveSlider($param['active'], $param['inactive'], 'galerie/magasin');
+
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $element = $this->GetDoctrine()->getRepository('yomaahBundle:Article')->find($param['id']);
+            foreach ($param['input'] as $key => $input)
+            {
+                $element->$key($input);
+            }
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($element);
+            $em->flush();
+            return new Response();
         }
     }
 
@@ -226,13 +249,26 @@ class MainController extends Controller implements AjaxInterface
         }
     }
 
-    public function logoAdminStructureAction()
+    public function logoAdminStructureAction(Array $param)
     {
-        return new Response('<section class="logoGalerie">
+        if ($param['lien'] == 'equipeAdmin')
+        {
+            return new Response('<section class="logoGalerie">
+                    <input type="hidden" value="pngUrl" />
+                    <figure class="adminMarqueLogo"><img src="'.$this->getDeployedImagesUrl().'galerie/equipe/pngUrl"></img></figure>
+                    <input type="checkbox" name="check" />
+                </section>');
+            
+        }else if ($param['lien'] == 'marquesAdmin')
+        {
+            return new Response('<section class="logoGalerie">
                     <input type="hidden" value="pngUrl" />
                     <figure class="adminMarqueLogo"><img src="'.$this->getDeployedImagesUrl().'marques/pngUrl"></img></figure>
                     <input type="checkbox" name="check" />
                 </section>');
+            
+        }
+        
     }
 
     public function getAdminContentStructureAction(Array $param)
@@ -249,7 +285,7 @@ class MainController extends Controller implements AjaxInterface
                 $keyRepo = new KeywordsRepo();
                 $response = $keyRepo->getHtml();
 
-            }else if ($param['lien'] == 'sliderAdmin')
+            }else if ($param['lien'] == 'sliderAdmin' || $param['lien'] == 'magasinAdmin')
             {
                 $response = $this->get('templating')
                     ->render('EuroLiteriestructureBundle:Ajax:imagesSlider.html.twig',array('url' => $this->getDeployedImagesUrl()));
@@ -261,6 +297,10 @@ class MainController extends Controller implements AjaxInterface
                         <figure><img src=""></img></figure>
                         <input type="checkbox" name="check"/>
                     </article>';
+
+            }else if ($param['lien'] == 'equipeAdmin')
+            {
+                $response = $this->get('templating')->render('EuroLiteriestructureBundle:Ajax:equipe.html.twig');
             }           
         }else if ($param['lien'] == 'promoInfo')
         {
@@ -276,10 +316,13 @@ class MainController extends Controller implements AjaxInterface
         {
             $filename = $param['dialog'].$repo;
             
-        }else if ($param['lien'] == 'sliderAdmin')
+        }else if ($param['lien'] == 'sliderAdmin' || $param['lien'] == 'magasinAdmin')
         {
             $filename = $param['dialog'].'Slider';
 
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $filename = $param['dialog'].'Equipe';
         }
         return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:Dialog:'.$filename.'.html.twig');
     }
@@ -288,12 +331,21 @@ class MainController extends Controller implements AjaxInterface
     {
         if (($filename = $this->getRepoAdminContentList($param['lien'])) != false)
         {
-            return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:AdminMenu:adminInterface'.$filename.'.html.twig');
+            $fichier = 'adminInterface'.$filename.'.html.twig';
             
         }else if ($param['lien'] == 'sliderAdmin')
         {
-            return $this->get('templating')->renderResponse('EuroLiteriestructureBundle:AdminMenu:adminInterfaceSlider.html.twig');
+            $fichier = 'adminInterfaceSlider.html.twig';
+
+        }else if ($param['lien'] == 'magasinAdmin')
+        {
+            $fichier = 'adminInterfaceMagasin.html.twig';
+
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $fichier = 'adminInterfaceEquipe.html.twig';
         }
+        return  $this->get('templating')->renderResponse('EuroLiteriestructureBundle:AdminMenu:'.$fichier);
 
     }
 
@@ -303,6 +355,7 @@ class MainController extends Controller implements AjaxInterface
         {
             $response = $this->getDoctrine()->getRepository('EuroLiteriestructureBundle:'.$repo)->findAll(); 
             return new JsonResponse($response);
+
         }else if ($param['lien'] == 'sliderAdmin')
         {
             $slider = array();
@@ -315,26 +368,54 @@ class MainController extends Controller implements AjaxInterface
                 </article>';
             return new JsonResponse($slider);
 
+        }else if ($param['lien'] == 'magasinAdmin')
+        {
+            $image = array();
+            $image['active'] = AjaxController::imageSearch('galerie/magasin/active', 'EuroLiterie/structureBundle');
+            $image['inactive'] = AjaxController::imageSearch('galerie/magasin/inactive', 'EuroLiterie/structureBundle');
+            $image['struct'] = '<article class="sliderImage">
+                    <input type="hidden" value="%imgUrl%" />
+                    <figure><img src="'.$this->getDeployedImagesUrl().'galerie/magasin/%dossier%/%imgUrl%"></img></figure>
+                    <input type="checkbox" name="check"/>
+                </article>';
+            return new JsonResponse($image);
+
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $dispatcher = $this->get('bundleDispatcher');
+            $param['idSite'] = $dispatcher->getIdSite();
+            $param['tag'] = 'equipe';
+            $response = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findByTag($param);
+            return new JsonResponse($response);
         }
 
     }
 
     public function deleteLogoAction($param)
     {
+        switch ($param['lien'])
+        {
+        case 'marquesAdmin':
+            $dossier = 'marques';
+            break;
+        case 'equipeAdmin':
+            $dossier = 'galerie/equipe';
+            break;
+        }
         if ($param['png'] != false)
         {
-            if (!(AjaxController::testFileExists('../deleted/marques', $png)))
+            if (!(AjaxController::testFileExists('../deleted/'.$dossier, $png)))
             {
-                AjaxController::moveImage('marques/', '..deleted/marques/', $png);
+                AjaxController::moveImage('marques/', '..deleted/'.$dossier.'/', $png);
             }else
             {
-                AjaxController::moveImage('marques/', '..deleted/marques/'.time().'_', $png);
+                AjaxController::moveImage('marques/', '..deleted/'.$dossier.'/'.time().'_', $png);
             }
             return new Response();
         }
     }
 
-    public function saveSlider($active, $inactive)
+    public function saveSlider($active, $inactive, $folder)
     {
         if (is_array($active))
         {
@@ -342,16 +423,16 @@ class MainController extends Controller implements AjaxInterface
             {
                 if (AjaxController::testNameValide($file, 'jpg|png|jpeg'))
                 {
-                    if (!(AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
-                        && AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
+                    if (!(AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$folder.'/active/', $file))
+                        && AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$folder.'/inactive/', $file))
                     {
-                        AjaxController::moveImage('slider/inactive/', 'slider/active/', $file, 'euroliteriestructure');
+                        AjaxController::moveImage($folder.'/inactive/', $folder.'/active/', $file, 'euroliteriestructure');
                     }
                 }
             }
         }else
         {
-            AjaxController::moveImage('slider/active/', 'slider/inactive/', '*');
+            AjaxController::moveImage($folder.'/active/', $folder.'/inactive/', '*');
         }
         if (is_array($inactive))
         {
@@ -359,14 +440,14 @@ class MainController extends Controller implements AjaxInterface
             {
                 if (AjaxController::testNameValide($file, 'png|jpg|jpeg'))
                 {
-                    if (!(AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $file))
-                        && AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/active/', $file))
+                    if (!(AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$folder.'/inactive/', $file))
+                        && AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$folder.'/active/', $file))
                     {
-                        AjaxController::moveImage('slider/active/', 'slider/inactive/', $file, 'euroliteriestructure');
+                        AjaxController::moveImage($folder.'/active/', $folder.'/inactive/', $file, 'euroliteriestructure');
 
-                    }else if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive', $file))
+                    }else if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$folder.'/inactive', $file))
                     {
-                        AjaxController::moveImage('slider/active/', 'slider/inactive/', $file, 'euroliteriestructure', time().$file);
+                        AjaxController::moveImage($folder.'/active/', $folder.'/inactive/', $file, 'euroliteriestructure', time().$file);
                     }
                 }
             }
@@ -387,6 +468,19 @@ class MainController extends Controller implements AjaxInterface
             $em->persist($marques);
             $em->flush();
             return new Response();
+
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $article = $this->getDoctrine()->getRepository('yomaahBundle:Article')->findOneBy(array('artId' => $param['id']));
+            if ($param['png'] != false)
+            {
+                $article->getPng()->setPngUrl($param['png']);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($article);
+                $em->flush();
+                return new Response();
+            }
+            
         }
     }
     public function uploadImageAction(Array $param)
@@ -399,14 +493,27 @@ class MainController extends Controller implements AjaxInterface
         $colorB = $param['fileInfo']['colorB'];
         $maxH = $param['fileInfo']['maxH'];
         $img = array();
+        $tmp = explode('Controller',__DIR__);
         if ($param['lien'] == 'marquesAdmin')
         {
             $img = $this->uploadLogoAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH);
 
         }else if ($param['lien'] == 'sliderAdmin')
         {
-            $img = $this->uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH);
+            $folder = $tmp[0].'Resources/public/images/slider/inactive/';
+            $img = $this->uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH, $folder);
+
+        }else if ($param['lien'] == 'magasinAdmin')
+        {
+            $folder = $tmp[0].'Resources/public/images/galerie/magasin/inactive/';
+            $img = $this->uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH, $folder);
+
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $folder = $tmp[0].'Resources/public/images/galerie/equipe/';
+            $img = $this->uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH, $folder);
         }
+
         if($img['imgUploaded'] === true){
             return new Response ('<img src="../bundles/euroliteriestructure/images/success.gif" width="16" height="16" border="0" style="marin-bottom: -4px;" /> Success!<br /><img src="'.$img['image'].'" border="0" />');
         }else{
@@ -418,10 +525,8 @@ class MainController extends Controller implements AjaxInterface
         }
     }
 
-    public function uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH)
+    public function uploadSliderAction($file, $maxSize, $maxW, $colorR, $colorG, $colorB, $maxH, $folder)
     {
-        $tmp = explode('Controller',__DIR__);
-        $folder = $tmp[0].'Resources/public/images/slider/inactive/';
         $filesize_image = $file->getClientSize();
         if($filesize_image > 0){
             $upload_image = AjaxController::uploadImage('euroliteriestructure', $file, $maxSize, $maxW, $folder, $colorR, $colorG, $colorB, $maxH, true);
@@ -457,25 +562,37 @@ class MainController extends Controller implements AjaxInterface
         {
             $dossier = 'marques/';
             AjaxController::deleteImage($dossier, $dossier, $param['png'], 'euroliteriestructure');
-        }else if ($param['lien'] == 'sliderAdmin')
+
+        }else if ($param['lien'] == 'sliderAdmin' || $param['lien'] == 'magasinAdmin')
         {
-            $dossier = 'slider/';
+            if ($param['lien'] == 'sliderAdmin')
+            {
+                $dossier = 'slider/';
+
+            }else if ($param['lien'] == 'magasinAdmin')
+            {
+                $dossier = 'galerie/magasin/';
+            }
             $tmp = array();
             foreach ($param['png'] as $png)
             {
                 if (AjaxController::testNameValide($png, 'jpg|jpeg|png'))
                 {
-                    if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/active/', $png))
+                    if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$dossier.'active/', $png))
                     {
                         $dossierFile = $dossier.'active/';
 
-                    }else if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/slider/inactive/', $png))
+                    }else if (AjaxController::testFileExists('./bundles/euroliteriestructure/images/'.$dossier.'inactive/', $png))
                     {
                         $dossierFile = $dossier.'inactive/';
                     }
                     AjaxController::deleteImage($dossier, $dossierFile, $png, 'euroliteriestructure');
                 }
             }
+        }else if ($param['lien'] == 'equipeAdmin')
+        {
+            $dossier = 'galerie/equipe/';
+            AjaxController::deleteImage($dossier, $dossier, $param['png'], 'euroliteriestructure');
         }
         return new Response();
     }

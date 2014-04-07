@@ -107,7 +107,7 @@ function getAdminContent(lien)
 {
     var url = makeUrl();
     var donnee = { 'lien' : lien};
-    if (lien == 'sliderAdmin')
+    if (lien == 'sliderAdmin' || lien == 'magasinAdmin')
     {
         sendAjax('ajax/adminContentStructure', function (data){
             $('.contentI').append(data);
@@ -272,7 +272,7 @@ $(document).on('click','.maj',function(){
             buttons : {
                 "Oui" : function(){
                     var t = $(this);
-                    if (lien == 'sliderAdmin')
+                    if (lien == 'sliderAdmin' || lien == 'magasinAdmin')
                     {
                         var donnee = { 'lien' : lien };
                         var active = new Array;
@@ -351,9 +351,17 @@ $(document).on('click', '.up', function(){
             nbToMove++;
         }
     });
-    if ((active.length + nbToMove) > 4)
+    if (lien == 'sliderAdmin')
     {
-        var nb = nbToMove - (4 - active.length);
+        var nbMax = 4;
+
+    }else
+    {
+        var nbMax = 10;
+    }
+    if ((active.length + nbToMove) > nbMax)
+    {
+        var nb = nbToMove - (nbMax - active.length);
         var div = '<div><p>Vous avez sélectionné '+ nb +' photo(s) de plus qu\'il n\'y a de place disponible pour le slider !!</p>'+
                     '<p>Veuillez désélectionner '+ nb +' photo(s)</p>';
         $(div).dialog({
@@ -599,7 +607,14 @@ $(document).on('click', '.modif', function(){
                             if (newPng != pngActuel[0])
                             {
                                 sendAjax('ajax/saveImage', function (data){
-                                    $('.adminMarqueLogo').children('img').each(function () {
+                                    if (lien == 'equipeAdmin')
+                                    {
+                                        var elem = '.adminEquipePhoto';
+                                    }else
+                                    {
+                                        var elem = '.adminMarqueLogo';
+                                    }
+                                    $(elem).children('img').each(function () {
                                         if ($(this).is(img))
                                         {
                                             $(this).attr('src',$(img).attr('src').replace(pngActuel[0], newPng));
@@ -640,7 +655,13 @@ $(document).on('click', '.modif', function(){
             }
         });
         var url = makeUrl();
-        var donnee = { 'lien' : lien };
+        if (lien == 'equipeAdmin')
+        {
+            var donnee = { 'lien' : 'galerie/'+lien };
+        }else
+        {
+            var donnee = { 'lien' : lien };
+        }
         sendAjax('ajax/logoAdminStructure', function (data) {
             var structure = data;
             $.getJSON(url[0]+"ajax/imagesSearch", donnee, function (data){
@@ -737,7 +758,7 @@ function ajaxUpload(form,url_action,id_element,html_show_loading,html_error_http
 		cross += "window.parent.$m('"+id_element+"').innerHTML = document.body.innerHTML; void(0);";
         $m(id_element).innerHTML = html_error_http;
         $m('ajax-temp').src = cross;
-        if (lien == 'marquesAdmin')
+        if (lien == 'marquesAdmin' || lien == 'equipeAdmin')
         {
             setTimeout(function (){
                 sendAjax('ajax/logoAdminStructure', function (data){
@@ -751,7 +772,7 @@ function ajaxUpload(form,url_action,id_element,html_show_loading,html_error_http
                     }
                 }, { 'lien' : lien });
             }, 250);
-        }else if (lien == 'sliderAdmin')
+        }else if (lien == 'sliderAdmin' || lien == 'magasinAdmin')
         {
             setTimeout(function (){
                 var src = $('#upload_area').children('img').last().attr('src');

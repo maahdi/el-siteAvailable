@@ -2,12 +2,12 @@
 {%block body%}
     <div class="articles ">
         {%for article in articles%}
-            <article class="article">
+            <article class="article" itemscope itemtype="http://www.data-vocabulary.org/Article">
                 <input type="hidden" name="id" value="{{article.id}}"/>
-                <article class="art-titre"><h1>{{article.artTitle}}</h1></article>
+                <article class="art-titre"><h1 itemprop="name">{{article.artTitle}}</h1></article>
                 <article class="triangle-top"></article>
                 <article class="triangle-bot"></article>
-                <section class="art-content">{{article.artContent | raw }}</section>
+                <section class="art-content" itemprop="articleBody">{{article.artContent | raw }}</section>
             </article>
         {%endfor%}
     </div>
